@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 
-
-
 interface LoginProps {
   onLogin: () => void;
 }
@@ -14,43 +12,64 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
 
     if (!identifier || !password) {
       setError("Both fields are required.");
       return;
     }
 
-    if (!isEmail && identifier.length < 3) {
-      setError("Username must be at least 3 characters.");
-      return;
-    }
+    try {
+      const response = await fetch("http://localhost:3000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: identifier, password }),
+      });
 
-    const validEmail = "test@example.com";
-    const validUsername = "testuser";
-    const validPassword = "password123";
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.message || "Failed to log in.");
+        return;
+      }
 
-    if (
-      (identifier === validEmail || identifier === validUsername) &&
-      password === validPassword
-    ) {
-      onLogin(); 
-      navigate("/"); 
-    } else {
-      setError("Invalid email/username or password.");
+      const data = await response.json();
+      console.log("Login Success:", data);
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+
+      onLogin();
+      navigate("/");
+    } catch (err) {
+      console.error("Error during login:", err);
+      setError("An error occurred. Please try again.");
     }
   };
 
-  const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
-    console.log("Google Login Success:", credentialResponse);
-    if (credentialResponse.credential) {
-      console.log("Google Token:", credentialResponse.credential);
-      onLogin(); 
-      navigate("/"); 
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    try {
+      const response = await fetch("http://localhost:3000/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: credentialResponse.credential }),
+      });
+
+      if (!response.ok) {
+        setError("Google login failed.");
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Google Login Success:", data);
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+
+      onLogin();
+      navigate("/");
+    } catch (err) {
+      console.error("Error during Google login:", err);
+      setError("An error occurred. Please try again.");
     }
   };
 
@@ -62,7 +81,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   return (
     <form onSubmit={handleSubmit}>
       <h2>Login</h2>
-      {error && <p>{error}</p>} {/* show error msg*/}
+      {error && <p>{error}</p>}
       <div>
         <label>Email or Username</label>
         <input
@@ -84,11 +103,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       <button type="submit">Submit</button>
       <hr />
       <h3>Or login with Google</h3>
-      <GoogleLogin
-        onSuccess={handleGoogleSuccess}
-        onError={handleGoogleError}
-      />
-      <p></p>
+      <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
       <p>
         Don't have an account? <Link to="/register">Register here</Link>
       </p>
