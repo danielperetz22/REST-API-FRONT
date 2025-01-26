@@ -1,33 +1,42 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-export const Header = () => {
+export const Header: React.FC<{
+  isLoggedIn: boolean; 
+  onLogout: () => void; 
+}> = ({ isLoggedIn, onLogout }) => {
+  const navigate = useNavigate();
+  const [logoutMessage, setLogoutMessage] = useState<string | null>(null);
 
-    const [isLogIn , setIsLogIn] = useState(false);
-    const hendleLogIn = () => {
-        setIsLogIn(true)
-    };
-    const hendleLogOut = () => {
-        setIsLogIn(false)
-    };
-
-    return(
-        <header>
-            <nav>
-            {isLogIn ? (
+  const handleLogout = () => {
+    onLogout(); 
+    setLogoutMessage("You have been logged out successfully."); 
+    navigate("/"); 
+    setTimeout(() => {
+      setLogoutMessage(null);
+    }, 3000);
+  };
+  return (
+    <header>
+      <nav>
+      {logoutMessage && <p>{logoutMessage}</p>} {/* log out msg */}
+        {isLoggedIn ? (
           <div className="nav-buttons">
-            <button onClick={() => alert("Go to Home")}>Home</button> 
-            <button onClick={() => alert("Go to Profile")}>Profile</button>
-            <button onClick={() => alert("Create a New Post")}>New Post</button>
-            <button onClick={() => alert("Open Chat")}>Chat</button>
-            <button onClick={hendleLogIn}>Logout</button>
+            <Link to="/"><button>HOME</button></Link>
+            <Link to="/profile"><button>PROFILE</button></Link>
+            <button onClick={handleLogout}>Logout</button>
           </div>
         ) : (
           <div className="auth-buttons">
-            <button onClick={() => alert("Go to Register")}>Register</button>
-            <button onClick={hendleLogOut}>Log In</button>
+            <Link to="/register">
+              <button>GET STARTED</button>
+            </Link>
+            <Link to="/login">
+              <button>LOGIN</button>
+            </Link>
           </div>
         )}
       </nav>
     </header>
-    );
+  );
 };

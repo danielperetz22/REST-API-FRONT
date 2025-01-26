@@ -3,7 +3,7 @@ import "./HomePage.css";
 export const HomePage = () => {
   return (
     <div className="container">
-      <h1 className="title">Welcome to Book Haven – the ultimate blog for book lovers!</h1>
+      <h1 className="title">Welcome to Book Haven - the ultimate blog for book lovers!</h1>
       <h2 className="subtitle">
         Discover a space where you can:
         <ul>
