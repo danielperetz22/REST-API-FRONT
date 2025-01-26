@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+
+
 
 interface LoginProps {
   onLogin: () => void;
@@ -42,6 +45,20 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     }
   };
 
+  const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
+    console.log("Google Login Success:", credentialResponse);
+    if (credentialResponse.credential) {
+      console.log("Google Token:", credentialResponse.credential);
+      onLogin(); 
+      navigate("/"); 
+    }
+  };
+
+  const handleGoogleError = () => {
+    console.error("Google Login Failed");
+    setError("Failed to login with Google.");
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <h2>Login</h2>
@@ -65,6 +82,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         />
       </div>
       <button type="submit">Submit</button>
+      <hr />
+      <h3>Or login with Google</h3>
+      <GoogleLogin
+        onSuccess={handleGoogleSuccess}
+        onError={handleGoogleError}
+      />
+      <p></p>
       <p>
         Don't have an account? <Link to="/register">Register here</Link>
       </p>
