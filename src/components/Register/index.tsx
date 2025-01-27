@@ -16,7 +16,7 @@ const Register: React.FC = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const defaultImage = "/src/assets/profile-default.jpg";
+  //const defaultImage = "/src/assets/profile-default.jpg";
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
