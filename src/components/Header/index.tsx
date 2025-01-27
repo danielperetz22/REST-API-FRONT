@@ -21,9 +21,11 @@ export const Header: React.FC<{
   return (
     <AppBar color="default">
       <Toolbar >
+        <Box>
       <Typography component={Link} to="/" variant="overline" fontSize={14} 
       sx={{textDecoration: 'none', color: 'inherit', fontWeight: 'bold', flexGrow: 1, marginLeft: 3,}}>
         HOME</Typography>
+        </Box>
         <Box sx={{display: 'flex', justifyContent: 'flex-end', marginLeft: 'auto'}}>
         {logoutMessage && ( <Typography variant="body2" color="error" sx={{ marginRight: 2 }}> {logoutMessage}
         </Typography>)}
