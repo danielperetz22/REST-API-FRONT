@@ -48,21 +48,28 @@ const Register: React.FC = () => {
       console.log("Registration Success:", response.data); 
       alert("User registered successfully!");
       navigate("/login"); 
-    } catch (err: any) {
-      if (err.response) {
-    
-        console.error("Error response:", err.response.data);
-        setError(err.response.data.message || "Failed to register.");
-      } else if (err.request) {
-        
-        console.error("No response received:", err.request);
-        setError("No response from the server. Please try again later.");
-      } else {
-     
-        console.error("Error during registration:", err.message);
+    } 
+    catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        if (err.response) {
+          console.error("Error response:", err.response.data);
+          setError(err.response.data.message || "Failed to register.");
+        } else if (err.request) {
+          console.error("No response received:", err.request);
+          setError("No response from the server. Please try again later.");
+        } else {
+          console.error("Error during registration:", err.message);
+          setError("An unexpected error occurred. Please try again.");
+        }
+      } else if (err instanceof Error) { 
+        console.error("General error:", err.message);
         setError("An unexpected error occurred. Please try again.");
+      } else {
+        console.error("Unknown error:", err);
+        setError("An unknown error occurred. Please try again.");
       }
     }
+    
   };
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     try {
@@ -73,18 +80,27 @@ const Register: React.FC = () => {
       console.log("Google Login Success:", response.data); 
       alert("User registered successfully!");
       navigate("/login");
-    } catch (err: any) {
-      if (err.response) {
-        console.error("Error response:", err.response.data);
-        setError(err.response.data.message || "Google registration failed.");
-      } else if (err.request) {
-        console.error("No response received:", err.request);
-        setError("No response from the server. Please try again later.");
-      } else {
-        console.error("Error during Google registration:", err.message);
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) { 
+        if (err.response) {
+          console.error("Error response:", err.response.data);
+          setError(err.response.data.message || "Google registration failed.");
+        } else if (err.request) {
+          console.error("No response received:", err.request);
+          setError("No response from the server. Please try again later.");
+        } else {
+          console.error("Error during Google registration:", err.message);
+          setError("An unexpected error occurred. Please try again.");
+        }
+      } else if (err instanceof Error) { 
+        console.error("General error:", err.message);
         setError("An unexpected error occurred. Please try again.");
+      } else {
+        console.error("Unknown error:", err);
+        setError("An unknown error occurred. Please try again.");
       }
     }
+    
   };
   
   const handleGoogleError = () => {
