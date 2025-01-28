@@ -41,7 +41,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       localStorage.setItem("refreshToken", data.refreshToken);
 
       onLogin();
-      navigate("/");
+      navigate("/posts");
     } catch (err) {
       console.error("Error during login:", err);
       setError("An error occurred. Please try again.");
