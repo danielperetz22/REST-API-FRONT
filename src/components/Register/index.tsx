@@ -8,7 +8,6 @@ import axios from "axios";
 import { handleGoogleResponse } from "../../hook/googleAuth";
 
 
-
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

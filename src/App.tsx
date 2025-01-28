@@ -6,6 +6,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Login from './components/Login';
 import { useState } from 'react';
+import PostsList from './components/AllPosts/PostList';
+import ProtectedRoute from './until/ProtectedRoutes';
+
 
 
 function App() {
@@ -27,6 +30,9 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login onLogin={handleLogin} />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/posts" element={<PostsList />} />
+              </Route>
             </Routes>
           </div>
         </div>
@@ -34,5 +40,4 @@ function App() {
     </GoogleOAuthProvider>
   );
 }
-
 export default App;

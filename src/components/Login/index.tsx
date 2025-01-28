@@ -4,6 +4,7 @@ import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import { handleGoogleResponse } from "../../hook/googleAuth";
 
+
 interface LoginProps {
   onLogin: () => void;
 }
@@ -42,7 +43,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       localStorage.setItem("refreshToken", data.refreshToken);
 
       onLogin();
-      navigate("/");
+      navigate("/posts");
     } catch (err) {
       console.error("Error during login:", err);
       setError("An error occurred. Please try again.");
