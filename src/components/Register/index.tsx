@@ -6,7 +6,6 @@ import {TextField,Button,Avatar,Box, Typography, Alert, IconButton, Grid} from "
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 import axios from "axios";
 
-
 const Register: React.FC = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
