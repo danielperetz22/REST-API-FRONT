@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import { handleGoogleResponse } from "../../hook/googleAuth";
 
 interface LoginProps {
   onLogin: () => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
-  const [identifier, setIdentifier] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     e.preventDefault();
     setError(null);
 
-    if (!identifier || !password) {
+    if (!email || !password) {
       setError("Both fields are required.");
       return;
     }
@@ -26,7 +27,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       const response = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({  identifier, password }),
+        body: JSON.stringify({  email, password }),
       });
 
       if (!response.ok) {
@@ -48,34 +49,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
-    try {
-      const response = await fetch("http://localhost:3000/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: credentialResponse.credential }),
-      });
-
-      if (!response.ok) {
-        setError("Google login failed.");
-        return;
-      }
-
-      const data = await response.json();
-      console.log("Google Login Success:", data);
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-
+  const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
+    if (credentialResponse.credential) {
+      handleGoogleResponse(credentialResponse.credential, navigate, setError);
       onLogin();
-      navigate("/");
-    } catch (err) {
-      console.error("Error during Google login:", err);
-      setError("An error occurred. Please try again.");
     }
   };
-
+  
   const handleGoogleError = () => {
-    console.error("Google Login Failed");
     setError("Failed to login with Google.");
   };
 
@@ -83,8 +64,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     <Grid container style={{ minHeight: "100vh", width:"100vw" }}>
       {/* Left Section */}
       <Grid xs={12} md={5} sx={{
-          backgroundColor: "#f9f9f7", display: "flex", flexDirection: "column",justifyContent: "baseline", padding: "2rem",}}>
-            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start",textAlign:"left", width: "100%", maxWidth: "350px", marginTop: "200px" }}>
+          backgroundColor: "#f9f9f7", display: "flex", flexDirection: "column",justifyContent: "center", padding: "2rem",}}>
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start",textAlign:"left", width: "100%", maxWidth: "350px", marginLeft: "100px" }}>
         <Typography variant="h3" component="h1" fontWeight="bold" > Welcome Back</Typography>
         <Typography variant="subtitle1" component="p"
           sx={{ marginTop: "1rem", color: "#666" }}>
@@ -95,21 +76,21 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
       {/* Right Section - Form */}
       <Grid xs={12} md={6}
-        sx={{ display: "flex",flexDirection: "column", justifyContent: "baseline", alignItems: "center", padding: "2rem",}}>
+        sx={{ display: "flex",flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "2rem",}}>
 
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "400px", marginTop: "200px" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "400px" }}>
           {error && ( <Typography variant="body2" color="error"sx={{ marginBottom: 2 }}> {error}</Typography>)}
 
           <form onSubmit={handleSubmit}>
             <Box sx={{ display: "flex",justifyContent: "center", flexDirection: "column", gap: 2 }}>
               {/* Identifier Field */}
               <TextField
-                id="identifier"
-                label="Email or Username"
+                id="email"
+                label="Email"
                 size="small"
-                value={identifier}
-                placeholder="Enter your email or username"
-                onChange={(e) => setIdentifier(e.target.value)}
+                value={email}
+                placeholder="Enter your email"
+                onChange={(e) => setEmail(e.target.value)}
               />
 
               {/* Password Field */}
