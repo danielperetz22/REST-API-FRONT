@@ -58,7 +58,7 @@ const Register: React.FC = () => {
       });
   
       console.log("Registration Success:", response.data); 
-      alert("User registered successfully!");
+      <Alert severity="success">User registered successfully!</Alert>
       navigate("/login"); 
     } 
     catch (err: unknown) {
@@ -98,9 +98,9 @@ const Register: React.FC = () => {
 return (
   <Grid container style={{ minHeight: "100vh", width: "100vw" }}>
     {/* Left Section */}
-    <Grid xs={12} md={5} sx={{ backgroundColor: "#f9f9f7", display: "flex", flexDirection: "column", justifyContent: "center", padding: "2rem" }}>
+    <Grid item xs={12} md={5} sx={{ backgroundColor: "#f9f9f7", display: "flex", flexDirection: "column", justifyContent: "center", padding: "2rem" }}>
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start",textAlign:"left", width: "100%", maxWidth: "350px", marginLeft: "100px" }}>
-        <Typography variant="h3" component="h1" fontWeight="bold">Sign Up To Our App</Typography>
+        <Typography variant="h3" component="h3" fontWeight={900}>Sign Up To Our App</Typography>
         <Typography variant="subtitle1" component="p" sx={{ marginTop: "1rem", color: "#666" }}>
         Here for the first time? Let's get you settled in
         </Typography>
@@ -108,7 +108,7 @@ return (
     </Grid>
 
     {/* Right Section - Form */}
-    <Grid xs={12} md={7} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "2rem" }}>
+    <Grid item xs={12} md={7} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "2rem" }}>
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "400px",marginTop: "80px" }}>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
