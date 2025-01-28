@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
-import { Box, Button, Grid, TextField, Typography } from "@mui/material";
+import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import { Alert, Box, Button, Grid, TextField, Typography } from "@mui/material";
+
 import { handleGoogleResponse } from "../../hook/googleAuth";
 
 interface LoginProps {
@@ -149,6 +150,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             </Typography>
           )}
 
+
           <form onSubmit={handleSubmit}>
             <Box
               sx={{
@@ -159,13 +161,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               }}
             >
               <TextField
-                id="email"
-                label="Email"
-                size="small"
-                value={email}
-                placeholder="Enter your email"
-                onChange={(e) => setEmail(e.target.value)}
-              />
+                id="email" label="Email" size="small" value={email} placeholder="Enter your email"
+                onChange={(e) => setEmail(e.target.value)}/>
 
               <TextField
                 id="password"
@@ -181,6 +178,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 Submit
               </Button>
 
+
               <Typography
                 variant="overline"
                 align="center"
@@ -195,6 +193,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleError}
               />
+
 
               <Typography
                 variant="overline"
