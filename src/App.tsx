@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import Login from './components/Login';
 import { useState } from 'react';
+import PostsList from './components/AllPosts/PostList';
 
 
 
@@ -28,6 +29,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login onLogin={handleLogin} />} />
+              <Route path="/posts" element={<PostsList />} />
             </Routes>
           </div>
         </div>

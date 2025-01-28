@@ -4,13 +4,14 @@ import ItemsListStyle from "./ItemsList.module.css"
 interface ItemsListProps {
     title: string,
     items: string[],
-    onItemSelected: (index: number) => void
+    Image : string
+  
 }
 
 
-const ItemsList: FC<ItemsListProps> = ({ title, items, onItemSelected }) => {
+const ItemsList: FC<ItemsListProps> = ({ title, items , Image}) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
-    const [render, setRender] = useState(0)
+
 
     console.log("PostsList render")
 
@@ -19,20 +20,13 @@ const ItemsList: FC<ItemsListProps> = ({ title, items, onItemSelected }) => {
         setSelectedIndex(index)
     }
 
-    const addItem = () => {
-        console.log("add item")
-        items.push("New item")
-        setRender(render + 1)
-    }
-
-    const onSelect = () => {
-        onItemSelected(selectedIndex)
-    }
+    
     return (
         <div className={ItemsListStyle.container}>
             <h1>{title}</h1>
+            <img src={Image} alt="image" />
             {items.length == 0 && <p>No items</p>}
-            {items.length != 0 && <ul className="list-group">
+            {items.length != 0 && <ul>
                 {items.map((item, index) => {
                     return <li
                         className={selectedIndex == index ? 'list-group-item active' : 'list-group-item'}
@@ -43,8 +37,6 @@ const ItemsList: FC<ItemsListProps> = ({ title, items, onItemSelected }) => {
                 })}
             </ul>
             }
-            <button className={'btn btn-primary m-3'} onClick={() => { addItem() }}>Add</button>
-            <button className={'btn btn-primary'} onClick={() => { onSelect() }}>Select</button>
         </div>
     )
 
