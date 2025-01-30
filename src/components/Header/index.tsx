@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AppBar, Box, Toolbar, Typography } from '@mui/material';
-// import App from "../../App";
+import { AppBar, Box, /*IconButton,*/ Toolbar, Typography } from '@mui/material';
+//import PermIdentityIcon from '@mui/icons-material/PermIdentity';
 
 export const Header: React.FC<{
   isLoggedIn: boolean; 
@@ -30,6 +30,11 @@ export const Header: React.FC<{
         {logoutMessage && ( <Typography variant="body2" color="error" sx={{ marginRight: 2 }}> {logoutMessage}
         </Typography>)}
         {isLoggedIn ? (<>
+          {/* <IconButton  component={Link} to="/profile"><PermIdentityIcon /></IconButton > */}
+          <Typography component={Link} to="/posts" variant="overline" fontSize={14} 
+      sx={{textDecoration: 'none', color: 'inherit', flexGrow: 1, marginRight: 3,}}>
+        FEED</Typography>
+
           <Typography component={Link} to="/profile" variant="overline" fontSize={14} 
       sx={{textDecoration: 'none', color: 'inherit', flexGrow: 1, marginRight: 3,}}>
         PROFILE</Typography>
@@ -48,26 +53,5 @@ export const Header: React.FC<{
           </Box>
       </Toolbar>
     </AppBar>
-    // <header>
-    //   <nav>
-    //   {logoutMessage && <p>{logoutMessage}</p>} {/* log out msg */}
-    //     {isLoggedIn ? (
-    //       <div className="nav-buttons">
-    //         <Link to="/"><button>HOME</button></Link>
-    //         <Link to="/profile"><button>PROFILE</button></Link>
-    //         <button onClick={handleLogout}>Logout</button>
-    //       </div>
-    //     ) : (
-    //       <div className="auth-buttons">
-    //         <Link to="/register">
-    //           <button>GET STARTED</button>
-    //         </Link>
-    //         <Link to="/login">
-    //           <button>LOGIN</button>
-    //         </Link>
-    //       </div>
-    //     )}
-    //   </nav>
-    // </header>
   );
 };
