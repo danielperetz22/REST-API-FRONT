@@ -6,7 +6,7 @@ export const HeroSection = () => {
   return (
     <Box sx={{ width: "100vw", height: "90vh", display: "flex", marginTop:"10rem"}}>
 
-      <Container maxWidth="xl" sx={{ width: "100vw" }}>
+      <Container maxWidth="xl" sx={{ width: "90vw" }}>
         <Grid container spacing={4} alignItems="center">
           {/* Left Content */}
           <Grid item xs={12} md={7}

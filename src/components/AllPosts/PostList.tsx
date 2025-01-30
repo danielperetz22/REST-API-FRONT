@@ -13,7 +13,7 @@ const PostsList: FC = () => {
           <li key={post._id}>
             <h3>{post.title}</h3>
             <p>{post.content}</p>
-            <img src={`http://localhost:3000/${post.image}`} alt={post.title} style={{ maxWidth: "300px" }} />
+            <img src={`${import.meta.env.VITE_API_BASE_URL}/${post.image}`} alt={post.title} style={{ maxWidth: "300px" }} />
           </li>
         ))}
       </ul>
