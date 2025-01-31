@@ -8,13 +8,18 @@ import axios from "axios";
 import { handleGoogleResponse } from "../../hook/googleAuth";
 
 
+
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
+  const [verifyEmail, setVerifyEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  const defaultImage = "/src/assets/profile-default.jpg";
 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,19 +34,32 @@ const Register: React.FC = () => {
     e.preventDefault();
     setError(null);
 
-    if ( !email || !password) {
+    if (!email || !verifyEmail || !password || !username) {
       setError("All fields are required.");
+      return;
+    }
+
+    if (email !== verifyEmail) {
+      setError("Emails do not match.");
       return;
     }
 
     const formData = new FormData();
     formData.append("email", email);
+    formData.append("username", username);
     formData.append("password", password);
     if (profileImage) {
       formData.append("profileImage", profileImage);
+    } else {
+      const response = await fetch(defaultImage);
+      const blob = await response.blob();
+      formData.append("profileImage", new File([blob], "profile-default.jpg", { type: "image/jpeg" }));
     }
 
-
+    if(username.length < 2) {
+      setError("Username must be at least 2 characters.");
+      return;
+    } 
 
     if (password.length < 6) {
       setError("Password must be at least 6 characters.");
@@ -128,7 +146,13 @@ return (
 
             {/* Email Field */}
             <TextField id="email" label="Email" size="small" value={email} placeholder="Enter your email" onChange={(e) => setEmail(e.target.value)} />
-
+            
+            {/* Verify Email Field */}
+            <TextField id="verify-email" label="Verify Email" size="small" value={verifyEmail} placeholder="Re-enter your email" onChange={(e) => setVerifyEmail(e.target.value)} fullWidth />
+            
+            {/* Username Field */}
+            <TextField id="username" label="Username" size="small" value={username} placeholder="Enter your username" onChange={(e) => setUsername(e.target.value)} />
+              
             {/* Password Field */}
             <TextField id="password" label="Password" size="small" type="password" value={password} placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
 

@@ -9,6 +9,7 @@ import { useState } from 'react';
 import PostsList from './components/AllPosts/PostList';
 import ProtectedRoute from './until/ProtectedRoutes';
 import ProfilePage from './components/Profile/ProfilePage';
+import EditProfilePage from './components/Profile/EditProfile';
 
 
 
@@ -34,6 +35,7 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route path="/posts" element={<PostsList />} />
                 <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/edit_profile" element={<EditProfilePage/>} />
               </Route>
             </Routes>
           </div>
