@@ -43,25 +43,26 @@ const ProfilePage = () => {
   }
 
   return (
-    <Box sx={{ width: "100vw", height: "90vh", display: "flex", marginTop: "10rem" }}>
+    <Box sx={{ width: "100vw", height: "100vh", display: "flex", justifyContent: "center",marginTop:"15rem"}}>
     <Container maxWidth="md" sx={{ width: "90vw" }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", gap: 4 }}>
-        
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", textAlign: "left" }}>
-          <Avatar src={user.profileImage} alt="Profile" sx={{ width: 200, height: 200, mb: 2 }} />
-        </Box>
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, width: "60%", minWidth: 300 }}>
-          <TextField label="Email" size="small" value={user.email} InputProps={{ readOnly: true }} fullWidth />
-          <TextField label="Username" size="small" value={user.username} InputProps={{ readOnly: true }} fullWidth />
-          <Button variant="contained" component={Link} to="/edit_profile" sx={{ mt: 2, textTransform: "none", alignSelf: "flex-end" }}>
-            Edit Profile
-          </Button>
-        </Box>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "stretch", flexWrap: "wrap", gap: 4 }}>
 
+      <Box sx={{ position: "relative", width: 200, height: 200 }}>
+          <Avatar src={user.profileImage} alt="Profile" sx={{ width: 200, height: 200, mb: 2 }} />
       </Box>
-      
-    </Container>
-  </Box>
+
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, width: "60%", minWidth: 300 }}>
+            <TextField label="Email" size="small" value={user.email} InputProps={{ readOnly: true }} fullWidth />
+            <TextField label="Username" size="small" value={user.username} InputProps={{ readOnly: true }} fullWidth />
+            <Button variant="contained" component={Link} to="/edit_profile" sx={{  textTransform: "none", alignSelf: "flex-end" }}>
+              Edit Profile
+            </Button>
+          </Box>
+  
+        </Box>
+  
+      </Container>
+    </Box>
   );
 };
 
