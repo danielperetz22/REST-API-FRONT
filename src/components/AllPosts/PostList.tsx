@@ -6,7 +6,7 @@ const PostsList: FC = () => {
   const { posts, isLoading, error } = usePosts();
 
   return (
-    <Container sx={{ mt: 4 }}>
+    <Container sx={{ mt: 4, marginTop: 16 }}>
       {isLoading && (
         <Grid container justifyContent="center">
           <CircularProgress />
@@ -25,7 +25,7 @@ const PostsList: FC = () => {
                 <CardMedia
                   component="img"
                   height="200"
-                  image={`${import.meta.env.VITE_API_BASE_URL}/${post.image}`}
+                 image={`http://localhost:3000/${post.image}`}
                   alt={post.title}
                   sx={{ objectFit: "cover" }}
                 />
