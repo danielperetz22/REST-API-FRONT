@@ -2,25 +2,24 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { Alert, Box, Button, Grid, TextField, Typography } from "@mui/material";
-
+import { useAuth } from "../../context/AuthContext";
 import { handleGoogleResponse } from "../../hook/googleAuth";
 
-interface LoginProps {
-  onLogin: () => void;
-}
 
-const Login: React.FC<LoginProps> = ({ onLogin }) => {
+const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
+
 
 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
+  
     if (!email || !password) {
       setError("Both fields are required.");
       return;
@@ -33,33 +32,40 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
       setError("Password must be at least 6 characters.");
       return;
     }
-
+  
     try {
       const response = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
+  
+      const text = await response.text();
 
       if (!response.ok) {
-        const data = await response.json();
-        setError(data.message || "Invalid email or password.");
+        try {
+          const data = JSON.parse(text);
+          setError(data.message || "Invalid email or password.");
+        } catch {
+          setError("Invalid response from server.");
+        }
         return;
       }
-
-      const data = await response.json();
-      console.log("Login Success:", data);
-
-      if (data.accessToken && data.refreshToken) {
-        localStorage.setItem("accessToken", data.accessToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
-        localStorage.setItem("userId", data._id || "");
-      } else {
+  
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        setError("Failed to parse server response.");
+        return;
+      }
+  
+      if (!data.refreshToken) {
         setError("Login failed. Missing tokens.");
         return;
       }
-
-      onLogin();
+  
+      login( data.refreshToken , data.userId); 
       navigate("/posts");
     } catch (err) {
       console.error("Error during login:", err);
@@ -72,7 +78,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
     if (credentialResponse.credential) {
       handleGoogleResponse(credentialResponse.credential, navigate, setError);
-      onLogin();
     }
   };
 
