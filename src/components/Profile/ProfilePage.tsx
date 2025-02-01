@@ -12,7 +12,7 @@ const ProfilePage = () => {
   }
 
   const [user, setUser] = useState<UserProfile | null>(null);
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("token");
 
 
   useEffect(() => {

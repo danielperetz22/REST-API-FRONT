@@ -17,7 +17,7 @@ const EditProfilePage = () => {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchUserProfile = async () => {
