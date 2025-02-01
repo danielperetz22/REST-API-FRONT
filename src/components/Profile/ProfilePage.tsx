@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { Container, Typography, Button, Box, Avatar, Grid } from "@mui/material";
+import { Container, Typography, Button, Box, Avatar, TextField } from "@mui/material";
 
 const ProfilePage = () => {
   interface UserProfile {
     _id: string;
+    username: string;
     profileImage: string;
     email: string;
   }
@@ -42,51 +43,26 @@ const ProfilePage = () => {
   }
 
   return (
-    // <Container maxWidth="sm" sx={{ mt: 4 }}>
-    //   <Box display="flex" alignItems="center" flexDirection="column" sx={{ mb: 4 }}>
-    //   <Avatar src={user.profileImage} alt="Profile" sx={{ width: 100, height: 100, mb: 2 }} />
-    //     <Typography variant="h5">{user.email}</Typography>
-    //     <Button
-    //       variant="contained"
-    //       component={Link}
-    //       to="/edit-profile"
-    //       sx={{ mt: 2, textTransform: "none" }}
-    //     >
-    //       Edit Profile
-    //     </Button>
-    //   </Box>
-    // </Container>
-    <Box sx={{ width: "100vw", height: "90vh", display: "flex", marginTop:"10rem"}}>
-      <Container  maxWidth="md" sx={{width: "90vw" }}>
-        <Grid container spacing={4} alignItems="center">
-          <Grid item xs={12} md={7}
-            sx={{ display: "flex", flexDirection: "column", justifyContent: "center", padding: "2rem",}}>
-            <Box
-              sx={{display: "flex", flexDirection: "column", alignItems: "flex-start", textAlign: "left", width: "100%" }}>
-                <Avatar src={user.profileImage} alt="Profile" sx={{ width: 200, height: 200, mb: 2 }} />
-              </Box>
-              
-              </Grid>
-              <Grid item xs={12} md={5}>
-            <Box>
-            <Typography variant="h5">{user.email}</Typography>
-            <Button
-          variant="contained"
-          component={Link}
-          to="/edit-profile"
-          sx={{ mt: 2, textTransform: "none" }}
-        >
-          Edit Profile
-        </Button>
-            </Box>
-        </Grid>
-      </Grid>
+    <Box sx={{ width: "100vw", height: "100vh", display: "flex", justifyContent: "center",marginTop:"15rem"}}>
+    <Container maxWidth="md" sx={{ width: "90vw" }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "stretch", flexWrap: "wrap", gap: 4 }}>
+
+      <Box sx={{ position: "relative", width: 200, height: 200 }}>
+          <Avatar src={user.profileImage} alt="Profile" sx={{ width: 200, height: 200, mb: 2 }} />
+      </Box>
+
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, width: "60%", minWidth: 300 }}>
+            <TextField label="Email" size="small" value={user.email} InputProps={{ readOnly: true }} fullWidth />
+            <TextField label="Username" size="small" value={user.username} InputProps={{ readOnly: true }} fullWidth />
+            <Button variant="contained" component={Link} to="/edit_profile" sx={{  textTransform: "none", alignSelf: "flex-end" }}>
+              Edit Profile
+            </Button>
+          </Box>
+  
+        </Box>
+  
       </Container>
     </Box>
-
-
-
-    
   );
 };
 
