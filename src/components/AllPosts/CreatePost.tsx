@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
-import { Container, TextField, Button, Typography, CircularProgress } from "@mui/material";
+import {Container, TextField, Button, Typography, CircularProgress, IconButton,} from "@mui/material";
+import ImageIcon from "@mui/icons-material/Image"; 
 
 const CreatePost = () => {
   const [title, setTitle] = useState("");
@@ -8,6 +9,13 @@ const CreatePost = () => {
   const [image, setImage] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,12 +29,9 @@ const CreatePost = () => {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("content", content);
-    
+
     if (image) {
-      console.log("Uploading image:", image.name);
       formData.append("image", image);
-    } else {
-      console.log("No image selected");
     }
 
     try {
@@ -42,17 +47,14 @@ const CreatePost = () => {
 
       console.log("Post created successfully:", response.data);
 
-      
       setTitle("");
       setContent("");
       setImage(null);
       setError(null);
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        console.error("Error creating post:", err.response ? err.response.data : err.message);
         setError(err.response?.data?.message || "Failed to create post.");
       } else {
-        console.error("Error creating post:", err);
         setError("Failed to create post.");
       }
     } finally {
@@ -61,12 +63,12 @@ const CreatePost = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container sx={{ marginTop: 30 }} maxWidth="sm">
       <Typography variant="h5" gutterBottom>
         Create New Post
       </Typography>
       {error && <Typography color="error">{error}</Typography>}
-      
+
       <form onSubmit={handleSubmit}>
         <TextField
           label="Title"
@@ -84,15 +86,22 @@ const CreatePost = () => {
           onChange={(e) => setContent(e.target.value)}
           margin="normal"
         />
-        
-        {/* בחירת קובץ */}
-        <input 
-          type="file" 
-          accept="image/*" 
-          onChange={(e) => setImage(e.target.files?.[0] || null)}
-          style={{ marginTop: "10px" }}
+
+        {/* Hidden File Input */}
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          style={{ display: "none" }}
         />
-        
+
+        {/* Image Upload Button */}
+        <IconButton onClick={() => fileInputRef.current?.click()} sx={{ mt: 2 }}>
+          <ImageIcon fontSize="large" color="primary" />
+        </IconButton>
+        {image && <Typography variant="body2">{image.name}</Typography>}
+
         <Button type="submit" variant="contained" sx={{ mt: 2 }} disabled={loading}>
           {loading ? <CircularProgress size={24} /> : "Submit"}
         </Button>
