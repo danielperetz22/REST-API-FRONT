@@ -9,6 +9,7 @@ import PostsList from './components/AllPosts/PostList';
 import ProtectedRoute from './until/ProtectedRoutes';
 import ProfilePage from './components/Profile/ProfilePage';
 import EditProfilePage from './components/Profile/EditProfile';
+import CreatePost from './components/AllPosts/CreatePost';
 
 
 
@@ -29,6 +30,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route element={<ProtectedRoute />}>
                 <Route path="/posts" element={<PostsList />} />
+                <Route path="/create_post" element={<CreatePost />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/edit_profile" element={<EditProfilePage/>} />
               </Route>

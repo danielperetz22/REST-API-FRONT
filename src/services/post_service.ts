@@ -8,7 +8,8 @@ export interface Post {
     title: string,
     content: string,
     owner: string,
-    image: string
+    image: string,
+    comments?: string[]; 
 }
 
 const getAllPosts = () => {
