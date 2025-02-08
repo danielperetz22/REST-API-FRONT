@@ -6,6 +6,7 @@ import {TextField,Button,Avatar,Box, Typography, Alert, IconButton, Grid} from "
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 import axios from "axios";
 import { handleGoogleResponse } from "../../hook/googleAuth";
+import { useAuth } from "../../context/AuthContext";
 
 
 
@@ -18,7 +19,7 @@ const Register: React.FC = () => {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const navigate = useNavigate();
-
+  const { login } = useAuth();
   const defaultImage = "/src/assets/profile-default.jpg";
 
 
@@ -103,7 +104,12 @@ const Register: React.FC = () => {
   };
   const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
     if (credentialResponse.credential) {
-      handleGoogleResponse(credentialResponse.credential, navigate, setError);
+      handleGoogleResponse(
+        credentialResponse.credential,
+        navigate,
+        setError,
+        login 
+      );
     }
   };
   

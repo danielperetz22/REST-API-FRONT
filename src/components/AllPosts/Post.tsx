@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, CardContent, Typography, CardMedia, Button, Collapse, Box } from "@mui/material";
+import { Card, CardContent, Typography, Button, TextField, Box, Collapse } from "@mui/material";
 
 interface PostProps {
   title: string;
@@ -9,19 +9,20 @@ interface PostProps {
 }
 
 const Post: React.FC<PostProps> = ({ title, content, imageUrl, comments = [] }) => {
-  const [showComments, setShowComments] = useState(false);
+  const [commentList, setCommentList] = useState<string[]>(comments); // שמירת התגובות
+  const [newComment, setNewComment] = useState<string>(""); // התגובה שהמשתמש מקליד
+  const [showComments, setShowComments] = useState(false); // מציג/מסתיר תגובות
+  const [isAddingComment, setIsAddingComment] = useState(false); // מציג טופס הוספת תגובה
+
+  const handleAddComment = () => {
+    if (newComment.trim() === "") return; // מניעת הוספת תגובה ריקה
+    setCommentList([...commentList, newComment]); // הוספת התגובה לרשימה
+    setNewComment(""); // איפוס השדה
+    setIsAddingComment(false); // סגירת הטופס לאחר שליחה
+  };
 
   return (
     <Card sx={{ maxWidth: 800, width: "100%", mx: "auto", boxShadow: 4, borderRadius: 2, p: 2 }}>
-      {imageUrl && (
-        <CardMedia
-          component="img"
-          height="250"
-          image={imageUrl}
-          alt="Post image"
-          sx={{ objectFit: "cover", borderRadius: "8px 8px 0 0" }}
-        />
-      )}
       <CardContent>
         <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
           {title}
@@ -30,26 +31,45 @@ const Post: React.FC<PostProps> = ({ title, content, imageUrl, comments = [] }) 
           {content}
         </Typography>
       </CardContent>
-      {/* Button to toggle comments */}
-      <Button
-        variant="contained"
-        sx={{ m: 2 }}
-        onClick={() => setShowComments(!showComments)}
-      >
-        {showComments ? "Hide Comments" : "Show Comments"}
+
+      {/* כפתור להצגת תגובות */}
+      <Button variant="contained" sx={{ m: 2 }} onClick={() => setShowComments(!showComments)}>
+        {showComments ? "הסתר תגובות" : "הצג תגובות"}
       </Button>
-      {/* Comments Section */}
+
+      {/* כפתור לפתיחת טופס הוספת תגובה */}
+      <Button variant="outlined" sx={{ m: 2 }} onClick={() => setIsAddingComment(true)}>
+        הוסף תגובה
+      </Button>
+
+      {/* טופס הוספת תגובה */}
+      <Collapse in={isAddingComment}>
+        <Box sx={{ display: "flex", gap: 1, p: 2 }}>
+          <TextField
+            fullWidth
+            label="הקלד תגובה..."
+            variant="outlined"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+          />
+          <Button variant="contained" onClick={handleAddComment}>
+            שלח
+          </Button>
+        </Box>
+      </Collapse>
+
+      {/* רשימת תגובות */}
       <Collapse in={showComments}>
         <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderRadius: 1 }}>
-          {comments.length > 0 ? (
-            comments.map((comment, index) => (
+          {commentList.length > 0 ? (
+            commentList.map((comment, index) => (
               <Typography key={index} variant="body2" sx={{ mb: 1, pl: 2 }}>
                 - {comment}
               </Typography>
             ))
           ) : (
             <Typography variant="body2" color="textSecondary">
-              No comments yet.
+              אין תגובות עדיין.
             </Typography>
           )}
         </Box>

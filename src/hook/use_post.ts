@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-
-
-interface Post {
-  _id: string;
-  title: string;
-  content: string;
-  image: string;
-}
+import { Post } from "../services/post_service";
 
 const usePosts = () => {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -17,16 +10,16 @@ const usePosts = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get<Post[]>("http://localhost:3000/post/all");
+        const response = await axios.get("http://localhost:3000/post/all");
+        console.log("Full API response:", response);
         setPosts(response.data);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching posts:", err);
         setError("Failed to fetch posts.");
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchPosts();
   }, []);
 

@@ -32,7 +32,7 @@ const PostsList: FC = () => {
       )}
       <Grid container spacing={3} justifyContent="center">
         {posts.map((post) => (
-          <Grid item xs={12} key={post._id}> {/* Ensure one card per row */}
+          <Grid item xs={12} md={6} lg= {6} key={post._id}> {/* Ensure one card per row */}
             <Card sx={{ 
               width: "100%", 
               maxWidth: 500,  // Set card width to resemble a book
