@@ -1,5 +1,4 @@
-import { FC, useState } from "react";
-import usePosts from "../../hook/use_post";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Grid,
@@ -13,13 +12,74 @@ import {
   Collapse,
   Box,
 } from "@mui/material";
+import axios from "axios";
+import CommentSection from "./CommentSection";
+import { useAuth } from "../../context/AuthContext"; 
 
-const PostsList: FC = () => {
-  const { posts, isLoading, error } = usePosts();
+// Types for posts & comments
+interface Comment {
+  _id?: string;
+  content: string;
+  email: string;
+  owner: string;
+  postId: string;
+}
+
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  email: string;  // who created the post
+  image: string;
+  comments: Comment[];
+}
+
+const PostsList: React.FC = () => {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [expandedPostId, setExpandedPostId] = useState<string | null>(null);
 
+  // Get user info from AuthContext
+  const { userId: authUserId, userEmail: authUserEmail } = useAuth();
+
+  useEffect(() => {
+    // Fetch posts from the backend
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get("http://localhost:3000/post/all");
+        setPosts(response.data);
+      } catch (err) {
+        console.error("Error fetching posts:", err);
+        setError("Failed to fetch posts.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
+
+  const handleExpandClick = (postId: string) => {
+    setExpandedPostId((prevId) => (prevId === postId ? null : postId));
+  };
+
+  // Called by CommentSection after a new comment is created
+  const handleCommentAdded = (postId: string, newComment: Comment) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) => {
+        if (post._id === postId) {
+          return {
+            ...post,
+            comments: [...post.comments, newComment],
+          };
+        }
+        return post;
+      })
+    );
+  };
+
   return (
-    <Container sx={{ mt: 4, marginTop: 16 }}>
+    <Container sx={{ mt: 4 }}>
       {isLoading && (
         <Grid container justifyContent="center">
           <CircularProgress />
@@ -30,68 +90,70 @@ const PostsList: FC = () => {
           {error}
         </Alert>
       )}
+      
       <Grid container spacing={3} justifyContent="center">
         {posts.map((post) => (
-          <Grid item xs={12} md={6} lg= {6} key={post._id}> {/* Ensure one card per row */}
-            <Card sx={{ 
-              width: "100%", 
-              maxWidth: 500,  // Set card width to resemble a book
-              mx: "auto", 
-              boxShadow: 4, 
-              borderRadius: 2, 
-              display: "flex", 
-              flexDirection: "column",
-              textAlign: "center",
-              p: 2 
-            }}>
-              
-              {/* Book Cover Image */}
+          <Grid item xs={12} md={6} lg={6} key={post._id}>
+            <Card
+              sx={{
+                width: "100%",
+                maxWidth: 500,
+                mx: "auto",
+                boxShadow: 4,
+                borderRadius: 2,
+                display: "flex",
+                flexDirection: "column",
+                textAlign: "center",
+                p: 2,
+              }}
+            >
+              {/* Post Cover Image */}
               <CardMedia
                 component="img"
-                height="300" // Taller image for book cover feel
-                image={`http://localhost:3000/${post.image}`} 
+                height="300"
+                image={`http://localhost:3000/${post.image}`}
                 alt={post.title}
-                sx={{ 
-                  objectFit: "cover", 
-                  borderRadius: "8px 8px 0 0" // Rounded top corners like a book
+                sx={{
+                  objectFit: "cover",
+                  borderRadius: "8px 8px 0 0",
                 }}
               />
 
+              {/* Main Content */}
               <CardContent>
-                {/* Book Title */}
                 <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
                   {post.title}
                 </Typography>
-
-                {/* Book Description */}
-                <Typography variant="body1" color="text.secondary" sx={{ flexGrow: 1 }}>
-                  {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
+                {/* Show the author’s email (the post creator) */}
+                <Typography variant="subtitle2" sx={{ my: 1 }}>
+                  Created by: {post.email}
+                </Typography>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                  {post.content.length > 200
+                    ? `${post.content.substring(0, 200)}...`
+                    : post.content}
                 </Typography>
               </CardContent>
 
-              {/* Show/Hide Comments Button */}
+              {/* Toggle Comments */}
               <Button
                 variant="contained"
-                sx={{ mt: 2 }}
-                onClick={() => setExpandedPostId(expandedPostId === post._id ? null : post._id)}
+                sx={{ mt: 1 }}
+                onClick={() => handleExpandClick(post._id)}
               >
                 {expandedPostId === post._id ? "Hide Comments" : "Show Comments"}
               </Button>
 
-              {/* Comments Section */}
               <Collapse in={expandedPostId === post._id}>
                 <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderRadius: 1 }}>
-                  {post.comments?.length > 0 ? (
-                    post.comments.map((comment, index) => (
-                      <Typography key={index} variant="body2" sx={{ mb: 1, pl: 2 }}>
-                        - {comment}
-                      </Typography>
-                    ))
-                  ) : (
-                    <Typography variant="body2" color="textSecondary">
-                      No comments yet.
-                    </Typography>
-                  )}
+                  <CommentSection
+                    post={post}
+                    authUserId={authUserId || ""}
+                    authUserEmail={authUserEmail || ""}
+                    onCommentAdded={(newComment) => {
+                      handleCommentAdded(post._id, newComment);
+                    }}
+                  />
                 </Box>
               </Collapse>
             </Card>

@@ -1,11 +1,10 @@
 
 import axios from "axios";
-
 export const handleGoogleResponse = async (
   credential: string,
   navigate: (path: string) => void,
   setError: (msg: string | null) => void,
-  login: ( refreshToken: string, userId: string) => void 
+  login: (refreshToken: string, userId: string, userEmail: string) => void // שלושה פרמטרים
 ) => {
   try {
     const response = await axios.post("http://localhost:3000/auth/google", {
@@ -14,15 +13,15 @@ export const handleGoogleResponse = async (
 
     const { accessToken, refreshToken, user } = response.data;
 
-    if (!accessToken || !refreshToken || !user._id) {
+    if (!accessToken || !refreshToken || !user._id || !user.email) {
       setError("Google login failed. Missing credentials.");
       return;
     }
 
     console.log("Google Login/Register Success:", user);
 
-    
-    login(refreshToken, user._id);
+    // מעביר שלושה פרמטרים כמו שצריך
+    login(refreshToken, user._id, user.email);
 
     alert(`Welcome, ${user.email}!`);
     navigate("/posts");
