@@ -24,7 +24,7 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <AppBar color="default">
+    <AppBar color="default" >
       <Toolbar>
         <Box>
           <Typography

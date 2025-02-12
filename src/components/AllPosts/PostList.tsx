@@ -3,20 +3,34 @@ import {
   Container,
   Grid,
   Card,
-  CardContent,
-  Typography,
+  CardHeader,
   CardMedia,
+  CardContent,
+  CardActions,
+  Collapse,
+  Avatar,
+  IconButton,
+  Typography,
   CircularProgress,
   Alert,
-  Button,
-  Collapse,
   Box,
 } from "@mui/material";
+import { red } from "@mui/material/colors";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import axios from "axios";
+import { styled } from "@mui/material/styles";
 import CommentSection from "./CommentSection";
-import { useAuth } from "../../context/AuthContext"; 
+import { useAuth } from "../../context/AuthContext";
 
-// Types for posts & comments
+const ExpandMore = styled(IconButton)(({ theme, expand }: { theme: any; expand: boolean }) => ({
+  transform: expand ? "rotate(180deg)" : "rotate(0deg)",
+  marginLeft: "auto",
+  transition: theme.transitions.create("transform", {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
+
 interface Comment {
   _id?: string;
   content: string;
@@ -29,7 +43,7 @@ interface Post {
   _id: string;
   title: string;
   content: string;
-  email: string;  // who created the post
+  email: string;
   image: string;
   comments: Comment[];
 }
@@ -39,12 +53,9 @@ const PostsList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedPostId, setExpandedPostId] = useState<string | null>(null);
-
-  // Get user info from AuthContext
   const { userId: authUserId, userEmail: authUserEmail } = useAuth();
 
   useEffect(() => {
-    // Fetch posts from the backend
     const fetchPosts = async () => {
       try {
         const response = await axios.get("http://localhost:3000/post/all");
@@ -63,7 +74,6 @@ const PostsList: React.FC = () => {
     setExpandedPostId((prevId) => (prevId === postId ? null : postId));
   };
 
-  // Called by CommentSection after a new comment is created
   const handleCommentAdded = (postId: string, newComment: Comment) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) => {
@@ -79,7 +89,7 @@ const PostsList: React.FC = () => {
   };
 
   return (
-    <Container sx={{ mt: 4 }}>
+    <Container sx={{ mt: 16, mb: 4 }}>
       {isLoading && (
         <Grid container justifyContent="center">
           <CircularProgress />
@@ -90,71 +100,58 @@ const PostsList: React.FC = () => {
           {error}
         </Alert>
       )}
-      
+
       <Grid container spacing={3} justifyContent="center">
         {posts.map((post) => (
-          <Grid item xs={12} md={6} lg={6} key={post._id}>
-            <Card
-              sx={{
-                width: "100%",
-                maxWidth: 500,
-                mx: "auto",
-                boxShadow: 4,
-                borderRadius: 2,
-                display: "flex",
-                flexDirection: "column",
-                textAlign: "center",
-                p: 2,
-              }}
-            >
-              {/* Post Cover Image */}
+          <Grid item xs={12} sm={6} md={4} lg={4} key={post._id}>
+            <Card sx={{ maxWidth: 500, mx: "auto", borderRadius: 2 }}>
+              <CardHeader
+                avatar={<Avatar sx={{ bgcolor: red[500] }}>P</Avatar>}
+                action={
+                  <IconButton aria-label="settings">
+                    <MoreVertIcon />
+                  </IconButton>
+                }
+                
+                title={post.email}
+              />
               <CardMedia
                 component="img"
-                height="300"
+                height="350"
                 image={`http://localhost:3000/${post.image}`}
                 alt={post.title}
-                sx={{
-                  objectFit: "cover",
-                  borderRadius: "8px 8px 0 0",
-                }}
+                sx={{ objectFit: "-moz-initial" }}
               />
-
-              {/* Main Content */}
               <CardContent>
-                <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
+              <Typography variant="subtitle2" color="textSecondary" sx={{fontWeight: "bold", fontSize: "1.1rem"}}>
                   {post.title}
                 </Typography>
-                {/* Show the author’s email (the post creator) */}
-                <Typography variant="subtitle2" sx={{ my: 1 }}>
-                  Created by: {post.email}
-                </Typography>
-                <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography variant="body2" color="text.secondary">
                   {post.content.length > 200
                     ? `${post.content.substring(0, 200)}...`
                     : post.content}
                 </Typography>
               </CardContent>
-
-              {/* Toggle Comments */}
-              <Button
-                variant="contained"
-                sx={{ mt: 1 }}
-                onClick={() => handleExpandClick(post._id)}
-              >
-                {expandedPostId === post._id ? "Hide Comments" : "Show Comments"}
-              </Button>
-
-              <Collapse in={expandedPostId === post._id}>
-                <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderRadius: 1 }}>
-                  <CommentSection
-                    post={post}
-                    authUserId={authUserId || ""}
-                    authUserEmail={authUserEmail || ""}
-                    onCommentAdded={(newComment) => {
-                      handleCommentAdded(post._id, newComment);
-                    }}
-                  />
-                </Box>
+              <CardActions disableSpacing>
+                <ExpandMore
+                  expand={expandedPostId === post._id}
+                  onClick={() => handleExpandClick(post._id)}
+                  aria-expanded={expandedPostId === post._id} theme={undefined}            >
+                  <ExpandMoreIcon />
+                </ExpandMore>
+              </CardActions>
+              <Collapse in={expandedPostId === post._id} timeout="auto" unmountOnExit>
+                <CardContent>
+                  <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderRadius: 1, mt: 2 }}>
+                    <Typography variant="h6">Comments</Typography>
+                    <CommentSection
+                      post={post}
+                      authUserId={authUserId || ""}
+                      authUserEmail={authUserEmail || ""}
+                      onCommentAdded={(newComment) => handleCommentAdded(post._id, newComment)}
+                    />
+                  </Box>
+                </CardContent>
               </Collapse>
             </Card>
           </Grid>
