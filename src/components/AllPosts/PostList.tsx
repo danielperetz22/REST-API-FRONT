@@ -1,17 +1,6 @@
 import { FC, useState } from "react";
 import usePosts from "../../hook/use_post";
-import {
-  Container,
-  Grid,
-  Card,
-  CardContent,
-  Typography,
-  CardMedia,
-  CircularProgress,
-  Alert,
-  Button,
-  Collapse,
-  Box,
+import { Container, Grid, Card, CardContent, Typography, CardMedia, CircularProgress, Alert, Button, Collapse, Box,
 } from "@mui/material";
 
 const PostsList: FC = () => {
@@ -19,7 +8,7 @@ const PostsList: FC = () => {
   const [expandedPostId, setExpandedPostId] = useState<string | null>(null);
 
   return (
-    <Container sx={{ mt: 4, marginTop: 16 }}>
+    <Container sx={{ mt: 16, mb: 4 }}>
       {isLoading && (
         <Grid container justifyContent="center">
           <CircularProgress />
