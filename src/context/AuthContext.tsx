@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState} from 'react';
 import axiosInstance from './axiosInstance';
 
 interface AuthContextType {
   token: string | null;
-  isAuthenticated: boolean;
   userId: string | null;
-  login: ( refreshToken: string, userId: string) => void;
+  userEmail: string | null;
+  isAuthenticated: boolean;
+  login: (refreshToken: string, userId: string, userEmail: string) => void;
   logout: () => Promise<void>;
 }
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
-// eslint-disable-next-line react-refresh/only-export-components
+// Hook to consume the context easily
 export const useAuth = () => {
   const context = React.useContext(AuthContext);
   if (!context) {
@@ -23,42 +24,49 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem('token')
-  );
-  const [userId, setUserId] = useState<string | null>(
-    localStorage.getItem('userId')
-  );
- 
-  const login = ( refreshToken: string, userId: string) => {
+  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [userId, setUserId] = useState<string | null>(localStorage.getItem('userId'));
+  const [userEmail, setUserEmail] = useState<string | null>(localStorage.getItem('userEmail'));
+
+  // Called after a successful login (e.g., from your Login page)
+  const login = (refreshToken: string, userId: string, userEmail: string) => {
     try {
+      // Save everything in localStorage
       localStorage.setItem('token', refreshToken);
       localStorage.setItem('userId', userId);
+      localStorage.setItem('userEmail', userEmail);
 
+      // Save in state
       setToken(refreshToken);
       setUserId(userId);
+      setUserEmail(userEmail);
+
+      console.log('Login success:', { refreshToken, userId, userEmail });
     } catch (error) {
       console.error('Failed to login:', error);
     }
-    console.log("Token after login:", refreshToken);
-    console.log("User ID after login:", userId);
-    console.log("Stored token in localStorage:", localStorage.getItem("token"));
-
   };
 
+  // Called to log out
   const logout = async () => {
     try {
       const refreshToken = localStorage.getItem('token');
       if (!refreshToken) throw new Error('No token found during logout');
 
+      // Invalidate on server
       await axiosInstance.post('/auth/logout', { refreshToken });
+
       console.log('Logged out successfully');
 
+      // Clear localStorage
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
+      localStorage.removeItem('userEmail');
 
+      // Clear state
       setToken(null);
       setUserId(null);
+      setUserEmail(null);
     } catch (error) {
       console.error('Failed to logout:', error);
     }
@@ -66,24 +74,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const isAuthenticated = !!token;
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUserId = localStorage.getItem('userId');
- 
-  
-    if (storedToken) {
-      console.log("Restoring token from localStorage:", storedToken);
-      setToken(storedToken);
-    }
-    if (storedUserId) {
-      setUserId(storedUserId);
-    }
-  }, []);
-  
+  // On app load, we already do initial localStorage checks in useState calls above
 
   return (
     <AuthContext.Provider
-      value={{ token, isAuthenticated, userId, login, logout }}
+      value={{
+        token,
+        userId,
+        userEmail,
+        isAuthenticated,
+        login,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -74,10 +74,11 @@ const Register: React.FC = () => {
           "Content-Type": "multipart/form-data", 
         },
       });
-  
+      const data = response.data;
       console.log("Registration Success:", response.data); 
       <Alert severity="success">User registered successfully!</Alert>
-      navigate("/login"); 
+      login(data.refreshToken, data._id, data.email);  
+      navigate("/posts"); 
     } 
     catch (err: unknown) {
       if (axios.isAxiosError(err)) {
@@ -108,7 +109,7 @@ const Register: React.FC = () => {
         credentialResponse.credential,
         navigate,
         setError,
-        login 
+        login
       );
     }
   };

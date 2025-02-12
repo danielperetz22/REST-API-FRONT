@@ -1,18 +1,61 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, Typography, Button, TextField, Box, Collapse } from "@mui/material";
 import axios from "axios";
 
+interface Comment {
+  content: string;
+  owner: string;
+  email: string;
+}
+
 interface PostProps {
   _id: string;
+  email: string;
   title: string;
   content: string;
   imageUrl?: string;
+  postId: string;
   comments?: string[];
   ownerId: string;
   onDelete: () => void;
 }
 
+const Post: React.FC<PostProps> = ({  title, content, imageUrl, postId }) => {
+  const [commentList, setCommentList] = useState<Comment[]>([]);
+  const [newComment, setNewComment] = useState<string>("");
+  const [showComments, setShowComments] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(`/api/comments?postId=${postId}`);
+        setCommentList(response.data);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+      }
+    };
+
+    if (showComments) {
+      fetchComments();
+    }
+  }, [showComments, postId]);
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+
+    try {
+      const response = await axios.post(`/api/comments`, {
+        content: newComment,
+        postId,
+        owner: "Current User", // Replace with actual user data if available
+        email: "user@example.com", // Replace with actual user data if available
+      });
+      setCommentList((prev) => [...prev, response.data]);
+      setNewComment("");
+    } catch (error) {
+      console.error("Error adding comment:", error);
+    }
+  };
 const Post: React.FC<PostProps> = ({ _id, title, content, imageUrl, comments = [], ownerId, onDelete }) => {
   const [commentList, setCommentList] = useState<string[]>(comments);
   const [newComment, setNewComment] = useState<string>("");
@@ -70,70 +113,49 @@ const Post: React.FC<PostProps> = ({ _id, title, content, imageUrl, comments = [
   
 
   return (
-    <Card sx={{ maxWidth: 800, width: "100%", mx: "auto", boxShadow: 4, borderRadius: 2, p: 2 }}>
+    <Card sx={{ mb: 4 }}>
       <CardContent>
-        <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>
-          {title}
-        </Typography>
-        <Typography variant="body1" color="textSecondary">
+        <Typography variant="h5">{title}</Typography>
+        <Typography variant="body2" color="text.secondary">
           {content}
         </Typography>
-        {imageUrl && <Box component="img" src={imageUrl} alt={title} sx={{ width: "100%", mt: 2, borderRadius: 2 }} />}
+        {imageUrl && <img src={imageUrl} alt={title} style={{ width: "100%", marginTop: 10 }} />}
+        <Button onClick={() => setShowComments(!showComments)} sx={{ mt: 2 }}>
+          {showComments ? "Hide Comments" : "Show Comments"}
+        </Button>
+        <Collapse in={showComments} timeout="auto" unmountOnExit>
+          <Box sx={{ mt: 2 }}>
+            {commentList.length > 0 ? (
+              commentList.map((comment, index) => (
+                <Box key={index} sx={{ mb: 2 }}>
+                  <Typography variant="subtitle2" color="text.primary">
+                    {comment.owner} ({comment.email})
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {comment.content}
+                  </Typography>
+                </Box>
+              ))
+            ) : (
+              <Typography>No comments yet.</Typography>
+            )}
+            <TextField
+              fullWidth
+              variant="outlined"
+              placeholder="Add a comment..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              sx={{ mt: 2 }}
+            />
+            <Button onClick={handleAddComment} sx={{ mt: 1 }} variant="contained">
+              Add Comment
+            </Button>
+          </Box>
+        </Collapse>
       </CardContent>
-
-      {ownerId === userId && (
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
-          <Button variant="outlined" color="primary" onClick={handleEdit}>
-            Edit
-          </Button>
-          <Button variant="contained" color="error" onClick={handleDelete}>
-            Delete
-          </Button>
-        </Box>
-      )}
-
-      <Button variant="contained" sx={{ mt: 2 }} onClick={() => setShowComments(!showComments)}>
-        {showComments ? "Hide Comments" : "Show Comments"}
-      </Button>
-
-      <Collapse in={isAddingComment}>
-        <Box sx={{ display: "flex", gap: 1, p: 2 }}>
-          <TextField
-            fullWidth
-            label="Type Comment..."
-            variant="outlined"
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-          />
-          <Button variant="contained" onClick={handleAddComment}>
-            Send
-          </Button>
-        </Box>
-      </Collapse>
-
-      <Button variant="outlined" sx={{ m: 2 }} onClick={() => setIsAddingComment(true)}>
-        Add Comment
-      </Button>
-
-      <Collapse in={showComments}>
-        <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderRadius: 1 }}>
-          {commentList.length > 0 ? (
-            commentList.map((comment, index) => (
-              <Typography key={index} variant="body2" sx={{ mb: 1, pl: 2 }}>
-                - {comment}
-              </Typography>
-            ))
-          ) : (
-            <Typography variant="body2" color="textSecondary">
-              No Comments Yet
-            </Typography>
-          )}
-        </Box>
-      </Collapse>
     </Card>
     
   );
 };
 
 export default Post;
-
