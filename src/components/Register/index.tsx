@@ -121,10 +121,10 @@ const Register: React.FC = () => {
 return (
   <Grid container style={{ minHeight: "100vh", width: "100vw" }}>
     {/* Left Section */}
-    <Grid item xs={12} md={5} sx={{ backgroundColor: "#f9f9f7", display: "flex", flexDirection: "column", justifyContent: "center", padding: "2rem" }}>
+    <Grid item xs={12} md={5} sx={{ backgroundColor: "#fefbf5", display: "flex", flexDirection: "column", justifyContent: "center", padding: "2rem" }}>
       <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start",textAlign:"left", width: "100%", maxWidth: "350px", marginLeft: "100px" }}>
-        <Typography variant="h3" component="h3" fontWeight={900}>Sign Up To Our App</Typography>
-        <Typography variant="subtitle1" component="p" sx={{ marginTop: "1rem", color: "#666" }}>
+        <Typography variant="h3" component="h3" fontWeight={900} color="#eb341f">Sign Up To Our App</Typography>
+        <Typography variant="subtitle1" component="p" sx={{ marginTop: "1rem", color:"#eb341f" }}>
         Here for the first time? Let's get you settled in
         </Typography>
       </Box>
