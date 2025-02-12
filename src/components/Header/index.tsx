@@ -24,15 +24,15 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <AppBar color="default" >
+    <AppBar sx={{backgroundColor: "#fefbf5",boxShadow: "none",}}>
       <Toolbar>
         <Box>
           <Typography
             component={Link}
             to="/"
             variant="overline"
-            fontSize={14}
-            sx={{ textDecoration: "none", color: "inherit", fontWeight: "bold", flexGrow: 1, marginLeft: 3 }}
+            fontSize={16}
+            sx={{ textDecoration: "none", color:"#eb341f", fontWeight: "bold", flexGrow: 1, marginLeft: 3 }}
           >
             HOME
           </Typography>
@@ -41,22 +41,22 @@ export const Header: React.FC = () => {
           {logoutMessage && <Typography variant="body2" color="error" sx={{ marginRight: 2 }}>{logoutMessage}</Typography>}
           {isAuthenticated ? (
             <>
-              <Typography component={Link} to="/posts" variant="overline" fontSize={14} sx={{ textDecoration: "none", color: "inherit", flexGrow: 1, marginRight: 3 }}>
+              <Typography component={Link} to="/posts" variant="overline" fontSize={14} sx={{ textDecoration: "none", color:"#eb341f", flexGrow: 1, marginRight: 3 }}>
                 FEED
               </Typography>
-              <Typography component={Link} to="/profile" variant="overline" fontSize={14} sx={{ textDecoration: "none", color: "inherit", flexGrow: 1, marginRight: 3 }}>
+              <Typography component={Link} to="/profile" variant="overline" fontSize={14} sx={{ textDecoration: "none", color:"#eb341f", flexGrow: 1, marginRight: 3 }}>
                 PROFILE
               </Typography>
-              <Typography variant="overline" fontSize={14} sx={{ textDecoration: "none", color: "inherit", cursor: "pointer", marginRight: 3 }} onClick={handleLogout}>
+              <Typography variant="overline" fontSize={14} sx={{ textDecoration: "none", color:"#eb341f", cursor: "pointer", marginRight: 3 }} onClick={handleLogout}>
                 LOGOUT
               </Typography>
             </>
           ) : (
             <Box sx={{ display: "flex", justifyContent: "flex-end", marginLeft: "auto" }}>
-              <Typography component={Link} to="/register" variant="overline" fontSize={14} sx={{ textDecoration: "none", color: "inherit", cursor: "pointer", marginRight: 3 }}>
+              <Typography component={Link} to="/register" variant="overline" fontSize={14} sx={{ textDecoration: "none",color:"#eb341f", cursor: "pointer", marginRight: 3 }}>
                 GET STARTED
               </Typography>
-              <Typography component={Link} to="/login" variant="overline" fontSize={14} sx={{ textDecoration: "none", color: "inherit", cursor: "pointer", marginRight: 3 }}>
+              <Typography component={Link} to="/login" variant="overline" fontSize={14} sx={{ textDecoration: "none", color:"#eb341f", cursor: "pointer", marginRight: 3 }}>
                 LOGIN
               </Typography>
             </Box>

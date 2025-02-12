@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Container, TextField, Button, Box, Avatar, IconButton, Alert } from "@mui/material";
+import { TextField, Button, Box, Avatar, IconButton, Alert } from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 
 const EditProfilePage = () => {
@@ -138,19 +138,16 @@ const EditProfilePage = () => {
   };
 
   return (
-    <Box sx={{ width: "100vw", height: "100vh", display: "flex", justifyContent: "center",marginTop:"15rem"}}>
-    <Container maxWidth="md" sx={{ width: "90vw" }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "stretch", flexWrap: "wrap", gap: 4 }}>
-        
-        <Box sx={{ position: "relative", width: 200, height: 200 }}>
-        <Avatar src={previewImage || user.profileImage} alt="Profile Preview" sx={{ width: 200, height: 200 }} />
-        <IconButton color="default" component="label" sx={{ position: "absolute", bottom: 10, right: 10, backgroundColor: "white", boxShadow: 1, borderRadius: "50%", width: 40, height: 40, ":hover": { backgroundColor: "rgba(255, 255, 255, 0.8)" } }}>
-          <AddPhotoAlternateOutlinedIcon />
-          <input type="file" accept="image/*" hidden onChange={handleFileChange} />
-        </IconButton>
-      </Box>
-  
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, width: "60%", minWidth: 300 }}>
+<Box sx={{ width:"100vw",mt: 4, mb: 4, backgroundColor: "#fefbf5", p: 4 ,pt:12 }}>
+<Box sx={{ width:"60vw",display: "flex", alignItems: "flex-start", gap: 4,mx:"auto" }}>
+    <Box sx={{ width: 200, height: 200, position: "relative" }}>
+      <Avatar src={previewImage || user.profileImage} alt="Profile Preview" sx={{ width: 200, height: 200 }} />
+      <IconButton color="default" component="label" sx={{ position: "absolute", bottom: 10, right: 10, backgroundColor: "white", boxShadow: 1, borderRadius: "50%", width: 40, height: 40 }}>
+        <AddPhotoAlternateOutlinedIcon />
+        <input type="file" accept="image/*" hidden onChange={handleFileChange} />
+      </IconButton>
+    </Box>
+    <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
             <TextField label="Email" size="small" variant="outlined" fullWidth value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
             <TextField label="Verify Email" size="small" variant="outlined" fullWidth value={verifyNewEmail} onChange={(e) => setVerifyNewEmail(e.target.value)} />
             <TextField label="Username" size="small" variant="outlined" fullWidth value={newUsername} onChange={(e) => setNewUsername(e.target.value)} />
@@ -161,18 +158,15 @@ const EditProfilePage = () => {
             {error && <Alert severity="error">{error}</Alert>}
             {success && <Alert severity="success">{success}</Alert>}
             <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-            <Button variant="outlined" component={Link} to="/profile" sx={{ textTransform: "none", alignSelf: "flex-end" }}>
+            <Button variant="outlined" component={Link} to="/profile" sx={{ color: "#eb341f" ,borderColor: "#eb341f", textTransform: "none", alignSelf: "flex-end" }}>
                     Return to Profile
                 </Button>
-                <Button variant="contained" color="primary" onClick={handleUpdateProfile} sx={{  textTransform: "none", alignSelf: "flex-start" }}>
+                <Button variant="contained" onClick={handleUpdateProfile} sx={{ backgroundColor: "#eb341f", textTransform: "none", alignSelf: "flex-start" }}>
                     Save Changes
                 </Button>
             </Box>
-           
           </Box>
         </Box>
-  
-      </Container>
     </Box>
   );
 };

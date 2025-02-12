@@ -10,13 +10,19 @@ import ProtectedRoute from './until/ProtectedRoutes';
 import ProfilePage from './components/Profile/ProfilePage';
 import EditProfilePage from './components/Profile/EditProfile';
 import CreatePost from './components/AllPosts/CreatePost';
+import theme from './styles/theme';
+import { ThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
 
 
 function App() {
  
   return (
+
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
+          <ThemeProvider theme={theme}>
+          <CssBaseline />
       <Router>
         <div>
           <div className="HeaderContainer">
@@ -38,7 +44,9 @@ function App() {
           </div>
         </div>
       </Router>
+      </ThemeProvider>
     </GoogleOAuthProvider>
+
   );
 }
 export default App;
