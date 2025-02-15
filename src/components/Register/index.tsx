@@ -8,8 +8,6 @@ import axios from "axios";
 import { handleGoogleResponse } from "../../hook/googleAuth";
 import { useAuth } from "../../context/AuthContext";
 
-
-
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
   const [verifyEmail, setVerifyEmail] = useState("");
@@ -21,7 +19,6 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const defaultImage = "/src/assets/profile-default.jpg";
-
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -67,7 +64,6 @@ const Register: React.FC = () => {
       return;
     }
 
-
     try {
       const response = await axios.post("http://localhost:3000/auth/register", formData, {
         headers: {
@@ -100,9 +96,8 @@ const Register: React.FC = () => {
         setError("An unknown error occurred. Please try again.");
       }
     }
-    
-
   };
+
   const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
     if (credentialResponse.credential) {
       handleGoogleResponse(
@@ -118,67 +113,65 @@ const Register: React.FC = () => {
     setError("Failed to register with Google.");
   };
 
+  return (
+    <Grid container style={{ minHeight: "100vh", width: "100vw" }}>
+      {/* Left Section */}
+      <Grid item xs={12} md={5} sx={{ backgroundColor: "#fefbf5", display: "flex", flexDirection: "column", justifyContent: "center", padding: "2rem" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start",textAlign:"left", width: "100%", maxWidth: "350px", marginLeft: "100px" }}>
+          <Typography variant="h3" component="h3" fontWeight={900} color="#eb341f">Sign Up To Our App</Typography>
+          <Typography variant="subtitle1" component="p" sx={{ marginTop: "1rem", color:"#eb341f" }}>
+          Here for the first time? Let's get you settled in
+          </Typography>
+        </Box>
+      </Grid>
 
-return (
-  <Grid container style={{ minHeight: "100vh", width: "100vw" }}>
-    {/* Left Section */}
-    <Grid item xs={12} md={5} sx={{ backgroundColor: "#fefbf5", display: "flex", flexDirection: "column", justifyContent: "center", padding: "2rem" }}>
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start",textAlign:"left", width: "100%", maxWidth: "350px", marginLeft: "100px" }}>
-        <Typography variant="h3" component="h3" fontWeight={900} color="#eb341f">Sign Up To Our App</Typography>
-        <Typography variant="subtitle1" component="p" sx={{ marginTop: "1rem", color:"#eb341f" }}>
-        Here for the first time? Let's get you settled in
-        </Typography>
-      </Box>
-    </Grid>
+      {/* Right Section - Form */}
+      <Grid item xs={12} md={7} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "2rem" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "400px",marginTop: "80px" }}>
+          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
-    {/* Right Section - Form */}
-    <Grid item xs={12} md={7} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "2rem" }}>
-      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "400px",marginTop: "80px" }}>
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+          <form onSubmit={handleSubmit}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              {/* Profile Image */}
+              <Box sx={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: 1, textAlign: "center", mb: 3 }}>
+                {previewImage ? (
+                  <Avatar src={previewImage} alt="Profile Preview" sx={{ width: 150, height: 150, mx: "auto" }} />
+                ) : (
+                  <Avatar alt="Default Profile" src="/src/assets/profile-default.jpg" sx={{ width: 150, height: 150, mx: "auto" }} />
+                )}
+                <IconButton color="default" component="label" aria-label="upload picture">
+                  <AddPhotoAlternateOutlinedIcon />
+                  <input type="file" accept="image/*" hidden onChange={handleFileChange} />
+                </IconButton>
+              </Box>
 
-        <form onSubmit={handleSubmit}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {/* Profile Image */}
-            <Box sx={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: 1, textAlign: "center", mb: 3 }}>
-              {previewImage ? (
-                <Avatar src={previewImage} alt="Profile Preview" sx={{ width: 150, height: 150, mx: "auto" }} />
-              ) : (
-                <Avatar alt="Default Profile" src="/src/assets/profile-default.jpg" sx={{ width: 150, height: 150, mx: "auto" }} />
-              )}
-              <IconButton color="default" component="label" aria-label="upload picture">
-                <AddPhotoAlternateOutlinedIcon />
-                <input type="file" accept="image/*" hidden onChange={handleFileChange} />
-              </IconButton>
-            </Box>
-
-            {/* Email Field */}
-            <TextField id="email" label="Email" size="small" value={email} placeholder="Enter your email" onChange={(e) => setEmail(e.target.value)} />
-            
-            {/* Verify Email Field */}
-            <TextField id="verify-email" label="Verify Email" size="small" value={verifyEmail} placeholder="Re-enter your email" onChange={(e) => setVerifyEmail(e.target.value)} fullWidth />
-            
-            {/* Username Field */}
-            <TextField id="username" label="Username" size="small" value={username} placeholder="Enter your username" onChange={(e) => setUsername(e.target.value)} />
+              {/* Email Field */}
+              <TextField id="email" label="Email" size="small" value={email} placeholder="Enter your email" onChange={(e) => setEmail(e.target.value)} />
               
-            {/* Password Field */}
-            <TextField id="password" label="Password" size="small" type="password" value={password} placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
+              {/* Verify Email Field */}
+              <TextField id="verify-email" label="Verify Email" size="small" value={verifyEmail} placeholder="Re-enter your email" onChange={(e) => setVerifyEmail(e.target.value)} fullWidth />
+              
+              {/* Username Field */}
+              <TextField id="username" label="Username" size="small" value={username} placeholder="Enter your username" onChange={(e) => setUsername(e.target.value)} />
+                
+              {/* Password Field */}
+              <TextField id="password" label="Password" size="small" type="password" value={password} placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
 
-            {/* Submit Button */}
-            <Button type="submit" variant="contained" fullWidth>Submit</Button>
+              {/* Submit Button */}
+              <Button type="submit" variant="contained" fullWidth>Submit</Button>
 
-            {/* Google Login */}
-            <Typography variant="overline" align="center" fontSize={14} sx={{ mt: 2 }}>Or register with Google</Typography>
-            <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
+              {/* Google Login */}
+              <Typography variant="overline" align="center" fontSize={14} sx={{ mt: 2 }}>Or register with Google</Typography>
+              <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
 
-            {/* Login Link */}
-            <Typography variant="overline" align="center" fontSize={14} sx={{ mt: 2 }}>Already have an account? <Link to="/login">Login here</Link></Typography>
-          </Box>
-        </form>
-      </Box>
+              {/* Login Link */}
+              <Typography variant="overline" align="center" fontSize={14} sx={{ mt: 2 }}>Already have an account? <Link to="/login">Login here</Link></Typography>
+            </Box>
+          </form>
+        </Box>
+      </Grid>
     </Grid>
-  </Grid>
-);
+  );
 };
-
 
 export default Register;

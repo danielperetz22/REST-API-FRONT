@@ -54,6 +54,7 @@ const CreatePost = () => {
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || "Failed to create post.");
+        console.error("Create post error:", err.response?.data || err.message);
       } else {
         setError("Failed to create post.");
       }

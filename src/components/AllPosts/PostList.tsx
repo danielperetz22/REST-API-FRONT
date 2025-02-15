@@ -17,13 +17,12 @@ import {
 } from "@mui/material";
 import { red } from "@mui/material/colors";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import axios from "axios";
 import { styled } from "@mui/material/styles";
 import CommentSection from "./CommentSection";
 import { useAuth } from "../../context/AuthContext";
 
-const ExpandMore = styled(IconButton)(({ theme, expand }: { theme: any; expand: boolean }) => ({
+const ExpandMore = styled(IconButton)<{ expand: boolean }>(({ theme, expand }) => ({
   transform: expand ? "rotate(180deg)" : "rotate(0deg)",
   marginLeft: "auto",
   transition: theme.transitions.create("transform", {
@@ -35,6 +34,7 @@ interface Comment {
   _id?: string;
   content: string;
   email: string;
+  username: string;
   owner: string;
   postId: string;
 }
@@ -44,6 +44,8 @@ interface Post {
   title: string;
   content: string;
   email: string;
+  userProfileImage: string;
+  username: string;
   image: string;
   comments: Comment[];
 }
@@ -53,7 +55,7 @@ const PostsList: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedPostId, setExpandedPostId] = useState<string | null>(null);
-  const { userId: authUserId, userEmail: authUserEmail } = useAuth();
+  const { userId: authUserId, userEmail: authUserEmail, userUsername:authUserUsername } = useAuth();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -105,16 +107,18 @@ const PostsList: React.FC = () => {
         {posts.map((post) => (
           <Grid item xs={12} sm={6} md={4} lg={4} key={post._id}>
             <Card sx={{ maxWidth: 500, mx: "auto", borderRadius: 2 }}>
-              <CardHeader
-                avatar={<Avatar sx={{ bgcolor: red[500] }}>P</Avatar>}
-                action={
-                  <IconButton aria-label="settings">
-                    <MoreVertIcon />
-                  </IconButton>
-                }
-                
-                title={post.email}
-              />
+            <CardHeader
+  avatar={
+    <Avatar
+      src={`http://localhost:3000/${post.userProfileImage}`}
+      sx={{ bgcolor: red[500] }}
+    >
+      {post.username && post.username.charAt(0).toUpperCase()}
+    </Avatar>
+  }
+  title={post.email}
+  subheader={post.username}
+/>
               <CardMedia
                 component="img"
                 height="350"
@@ -142,15 +146,15 @@ const PostsList: React.FC = () => {
               </CardActions>
               <Collapse in={expandedPostId === post._id} timeout="auto" unmountOnExit>
                 <CardContent>
-                  <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderRadius: 1, mt: 2 }}>
+                    <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderRadius: 1, mt: 2 }}>
                     <Typography variant="h6">Comments</Typography>
                     <CommentSection
                       post={post}
                       authUserId={authUserId || ""}
                       authUserEmail={authUserEmail || ""}
-                      onCommentAdded={(newComment) => handleCommentAdded(post._id, newComment)}
+                      onCommentAdded={(newComment) => handleCommentAdded(post._id, { ...newComment, username: authUserUsername || "" })}
                     />
-                  </Box>
+                    </Box>
                 </CardContent>
               </Collapse>
             </Card>

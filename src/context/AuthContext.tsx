@@ -6,7 +6,9 @@ interface AuthContextType {
   userId: string | null;
   userEmail: string | null;
   isAuthenticated: boolean;
-  login: (refreshToken: string, userId: string, userEmail: string) => void;
+  userProfileImage: string | null;
+  userUsername: string | null;
+login: (refreshToken: string, userId: string, userEmail: string,) => void;
   logout: () => Promise<void>;
 }
 
@@ -27,6 +29,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [userId, setUserId] = useState<string | null>(localStorage.getItem('userId'));
   const [userEmail, setUserEmail] = useState<string | null>(localStorage.getItem('userEmail'));
+  const [userProfileImage, setUserProfileImage] = useState<string | null>(localStorage.getItem('userProfileImage'));
+  const [userUsername, setUserUsername] = useState<string | null>(localStorage.getItem('userUsername'));
 
   // Called after a successful login (e.g., from your Login page)
   const login = (refreshToken: string, userId: string, userEmail: string) => {
@@ -35,13 +39,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       localStorage.setItem('token', refreshToken);
       localStorage.setItem('userId', userId);
       localStorage.setItem('userEmail', userEmail);
-
+    
+      
       // Save in state
       setToken(refreshToken);
       setUserId(userId);
       setUserEmail(userEmail);
+      setUserProfileImage(userProfileImage);
+      setUserUsername(userUsername);
 
-      console.log('Login success:', { refreshToken, userId, userEmail });
+      console.log('Login success:', { refreshToken, userId, userEmail, userProfileImage, userUsername });
     } catch (error) {
       console.error('Failed to login:', error);
     }
@@ -62,11 +69,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
       localStorage.removeItem('userEmail');
+      localStorage.removeItem('userProfileImage');
+      localStorage.removeItem('userUsername');
+
+
 
       // Clear state
       setToken(null);
       setUserId(null);
       setUserEmail(null);
+      setUserProfileImage(null);
+      setUserUsername(null);
     } catch (error) {
       console.error('Failed to logout:', error);
     }
@@ -82,7 +95,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         token,
         userId,
         userEmail,
+        userProfileImage,
+        userUsername,
         isAuthenticated,
+        
         login,
         logout,
       }}
