@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Divider } from "@mui/material";
+import { Box, Typography, TextField, Button, Divider, Stack } from "@mui/material";
+import SendIcon from '@mui/icons-material/Send';
 import axios from "axios";
 
 interface Comment {
@@ -7,6 +8,7 @@ interface Comment {
   content: string;
   email: string;
   owner: string;
+  username: string;
   postId: string;
 }
 
@@ -21,8 +23,9 @@ interface PostType {
 
 interface CommentSectionProps {
   post: PostType;
-  authUserId: string;       // logged-in user's _id
-  authUserEmail: string;    // logged-in user's email
+  authUserId: string;     
+  authUserEmail: string; 
+  authUserUsername: string;  
   onCommentAdded: (newComment: Comment) => void; 
 }
 
@@ -30,6 +33,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   post,
   authUserId,
   authUserEmail,
+  authUserUsername,
   onCommentAdded
 }) => {
   const [newComment, setNewComment] = useState<string>("");
@@ -43,6 +47,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         postId: post._id,
         owner: authUserId,
         email: authUserEmail,
+        username: authUserUsername,
       });
       // The server should return the newly created comment object
       const createdComment: Comment = response.data;
@@ -59,16 +64,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({
 
   return (
     <Box sx={{ mt: 2 }}>
-      <Typography variant="h6" gutterBottom>
-        Comments
-      </Typography>
+
 
       {post.comments?.length > 0 ? (
         post.comments.map((comment) => (
           <Box key={comment._id} sx={{ mb: 2 }}>
             <Divider sx={{ mb: 1 }} />
             <Typography variant="subtitle2" color="text.primary">
-              {comment.email} says:
+              {comment.username} ({comment.email}):
             </Typography>
             <Typography variant="body2" color="text.secondary">
               {comment.content}
@@ -79,23 +82,26 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         <Typography>No comments yet.</Typography>
       )}
 
-      <Box sx={{ mt: 3 }}>
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder="Add a comment..."
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-        />
-        <Button
-          onClick={handleAddComment}
-          sx={{ mt: 1 }}
-          variant="contained"
-          disabled={!newComment.trim()}
-        >
-          Add Comment
-        </Button>
-      </Box>
+<Box sx={{ mt: 3 }}>
+  <Stack direction="row" spacing={2} alignItems="center">
+    <TextField
+      fullWidth
+      variant="outlined"
+      placeholder="Add a comment..."
+      value={newComment}
+      onChange={(e) => setNewComment(e.target.value)}
+      size="small"
+    />
+    <Button
+      onClick={handleAddComment}
+      variant="outlined"
+      disabled={!newComment.trim()}
+      sx={{ whiteSpace: "nowrap", height: "100%" }}
+      endIcon={<SendIcon />} 
+    >
+    </Button>
+  </Stack>
+</Box>
     </Box>
   );
 };

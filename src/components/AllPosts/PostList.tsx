@@ -15,7 +15,6 @@ import {
   Alert,
   Box,
 } from "@mui/material";
-import { red } from "@mui/material/colors";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import axios from "axios";
 import { styled } from "@mui/material/styles";
@@ -111,13 +110,21 @@ const PostsList: React.FC = () => {
   avatar={
     <Avatar
       src={`http://localhost:3000/${post.userProfileImage}`}
-      sx={{ bgcolor: red[500] }}
+      sx={{ height: 44, width: 44 }}
     >
       {post.username && post.username.charAt(0).toUpperCase()}
     </Avatar>
   }
-  title={post.email}
-  subheader={post.username}
+  title={post.username}
+  subheader={post.email}
+  titleTypographyProps={{
+    variant: "h6",
+    sx: { fontWeight: "bold" },
+  }}
+  subheaderTypographyProps={{
+    variant: "body2",
+    color: "text.secondary",
+  }}
 />
               <CardMedia
                 component="img"
@@ -151,6 +158,7 @@ const PostsList: React.FC = () => {
                     <CommentSection
                       post={post}
                       authUserId={authUserId || ""}
+                      authUserUsername={authUserUsername || ""}
                       authUserEmail={authUserEmail || ""}
                       onCommentAdded={(newComment) => handleCommentAdded(post._id, { ...newComment, username: authUserUsername || "" })}
                     />

@@ -167,6 +167,7 @@ const UserPosts: React.FC = () => {
                         post={post}
                         authUserId={authUserId || ""}
                         authUserEmail={authUserEmail || ""}
+                        authUserUsername={authUserUsername || ""}
                         onCommentAdded={(newComment) =>
                           handleCommentAdded(post._id, {
                             ...newComment,

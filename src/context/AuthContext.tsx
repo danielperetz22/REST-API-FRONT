@@ -39,6 +39,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       localStorage.setItem('token', refreshToken);
       localStorage.setItem('userId', userId);
       localStorage.setItem('userEmail', userEmail);
+      localStorage.setItem('userProfileImage', userProfileImage ?? '');
+      localStorage.setItem('userUsername', userUsername ?? '');
+      
     
       
       // Save in state

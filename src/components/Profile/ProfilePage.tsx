@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, List, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import ProfileDetails from "./ProfileDetails"; 
@@ -31,24 +31,23 @@ const ProfilePage = () => {
   if (!user) return <Typography>No user data available.</Typography>;
 
   return (
-    <List>
+    <Box sx={{ width: "100%" }}>
       <ProfileDetails />
-      <Box sx={{ display: "flex", alignItems: "center", mt: 4, mb: 2 }}>  
-        <Typography variant="overline" sx={{ fontWeight: "bold", fontSize: 50, color: "#eb341f", flexGrow: 1 , ml:32}}>
+      <Box sx={{ display: "flex", alignItems: "center", mt: 4, mb: 2 }}>
+        <Typography variant="overline" sx={{ fontWeight: "bold", fontSize: 50, color: "#eb341f", flexGrow: 1, ml: 32 }}>
           My Posts
         </Typography>
         <Button
           variant="text"
           component="a"
           href="/create_post"
-          sx={{  color: "#eb341f", borderColor: "#eb341f", gap: 1 ,mr:24 }}
+          sx={{ color: "#eb341f", borderColor: "#eb341f", gap: 1, mr: 24 }}
         >
           <AddIcon />
         </Button>
-      </Box>  
+      </Box>
       <ProfilePost />
-    </List>
+    </Box>
   );
-};
-
+}
 export default ProfilePage;
