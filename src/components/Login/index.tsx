@@ -15,62 +15,62 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
+  
     if (!email || !password) {
       setError("Both fields are required.");
       return;
     }
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-
+  
     try {
+      console.log("Sending login request with email:", email);
+  
       const response = await fetch("http://localhost:3000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
-
+  
       const text = await response.text();
-
+      console.log("Raw response from server:", text);
+  
       if (!response.ok) {
         try {
           const data = JSON.parse(text);
+          console.error("Login error:", data);
           setError(data.message || "Invalid email or password.");
         } catch {
+          console.error("Invalid response from server:", text);
           setError("Invalid response from server.");
         }
         return;
       }
-
+  
       let data;
       try {
         data = JSON.parse(text);
+        console.log("Parsed login response:", data);
       } catch {
+        console.error("Failed to parse JSON response:", text);
         setError("Failed to parse server response.");
         return;
       }
-
-      if (!data.accessToken || !data.refreshToken || !data._id) {
+  
+      if (!data.accessToken || !data.refreshToken || !data._id || !data.email || !data.username || !data.profileImage) {
+        console.error("Login failed. Missing credentials:", data);
         setError("Login failed. Missing credentials.");
         return;
       }
-
+  
       console.log("Login Success:", data);
-      
-      login(data.refreshToken, data._id , data.email); 
+  
+      login(data.refreshToken, data._id, data.email, data.username, data.profileImage);
       navigate("/posts");
     } catch (err) {
       console.error("Error during login:", err);
       setError("An error occurred. Please try again.");
     }
   };
-
+  
   const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     console.log("Google Login Success:", credentialResponse);
 

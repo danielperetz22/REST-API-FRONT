@@ -5,8 +5,10 @@ interface AuthContextType {
   token: string | null;
   userId: string | null;
   userEmail: string | null;
+  userProfileImage: string | null;
+  userUsername: string | null;
   isAuthenticated: boolean;
-  login: (refreshToken: string, userId: string, userEmail: string) => void;
+  login: (refreshToken: string, userId: string, userEmail: string, userUsername: string, userProfileImage: string) => void;
   logout: () => Promise<void>;
 }
 
@@ -27,46 +29,54 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [userId, setUserId] = useState<string | null>(localStorage.getItem('userId'));
   const [userEmail, setUserEmail] = useState<string | null>(localStorage.getItem('userEmail'));
+  const [userProfileImage, setUserProfileImage] = useState<string | null>(localStorage.getItem('userProfileImage'));
+  const [userUsername, setUserUsername] = useState<string | null>(localStorage.getItem('userUsername'));
 
-  // Called after a successful login (e.g., from your Login page)
-  const login = (refreshToken: string, userId: string, userEmail: string) => {
+  const login = (refreshToken: string, userId: string, userEmail: string, userUsername: string, userProfileImage: string) => {
     try {
-      // Save everything in localStorage
-      localStorage.setItem('token', refreshToken);
-      localStorage.setItem('userId', userId);
-      localStorage.setItem('userEmail', userEmail);
 
-      // Save in state
+      localStorage.setItem("token", refreshToken);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("userEmail", userEmail);
+      localStorage.setItem("userProfileImage", userProfileImage);
+      localStorage.setItem("userUsername", userUsername);
+  
       setToken(refreshToken);
       setUserId(userId);
       setUserEmail(userEmail);
-
-      console.log('Login success:', { refreshToken, userId, userEmail });
+      setUserProfileImage(userProfileImage);
+      setUserUsername(userUsername);
+  
+      console.log("Login success:", { refreshToken, userId, userEmail, userProfileImage, userUsername });
     } catch (error) {
-      console.error('Failed to login:', error);
+      console.error("Failed to login:", error);
     }
   };
+  
+  
 
-  // Called to log out
   const logout = async () => {
     try {
       const refreshToken = localStorage.getItem('token');
       if (!refreshToken) throw new Error('No token found during logout');
 
-      // Invalidate on server
+
       await axiosInstance.post('/auth/logout', { refreshToken });
 
       console.log('Logged out successfully');
 
-      // Clear localStorage
+
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
       localStorage.removeItem('userEmail');
+      localStorage.removeItem('userProfileImage');
+      localStorage.removeItem('userUsername');
 
-      // Clear state
       setToken(null);
       setUserId(null);
       setUserEmail(null);
+      setUserProfileImage(null);
+      setUserUsername(null);
     } catch (error) {
       console.error('Failed to logout:', error);
     }
@@ -74,15 +84,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const isAuthenticated = !!token;
 
-  // On app load, we already do initial localStorage checks in useState calls above
-
   return (
     <AuthContext.Provider
       value={{
         token,
         userId,
         userEmail,
+        userProfileImage,
+        userUsername,
         isAuthenticated,
+        
         login,
         logout,
       }}

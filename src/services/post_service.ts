@@ -14,6 +14,8 @@ export interface Post {
     content: string,
     owner: string,
     email: string,  
+    username: string,
+    profileImage: string,
     image: string,
     comments?: Comment[]; 
 }

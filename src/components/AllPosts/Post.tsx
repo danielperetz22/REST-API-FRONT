@@ -10,6 +10,7 @@ interface Comment {
 
 interface PostProps {
   email: string;
+  username: string;
   title: string;
   content: string;
   imageUrl?: string;
@@ -24,7 +25,7 @@ const Post: React.FC<PostProps> = ({  title, content, imageUrl, postId }) => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const response = await axios.get(`/api/comments?postId=${postId}`);
+        const response = await axios.get('/api/comments?postId=${postId}');
         setCommentList(response.data);
       } catch (error) {
         console.error("Error fetching comments:", error);
@@ -40,11 +41,7 @@ const Post: React.FC<PostProps> = ({  title, content, imageUrl, postId }) => {
     if (!newComment.trim()) return;
 
     try {
-      const response = await axios.post(`/api/comments`, {
-        content: newComment,
-        postId,
-        owner: "Current User", // Replace with actual user data if available
-        email: "user@example.com", // Replace with actual user data if available
+      const response = await axios.post('/api/comments', {
       });
       setCommentList((prev) => [...prev, response.data]);
       setNewComment("");

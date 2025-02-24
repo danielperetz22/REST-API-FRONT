@@ -1,36 +1,103 @@
-import { FC, useState, useEffect } from "react";
-import usePosts from "../../hook/use_post";
-import { Container, Grid, Card, CardContent, Typography, CardMedia, CircularProgress, Alert, Button, Collapse, Box } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Grid,
+  Card,
+  CardHeader,
+  CardMedia,
+  CardContent,
+  CardActions,
+  Collapse,
+  Avatar,
+  IconButton,
+  Typography,
+  CircularProgress,
+  Alert,
+  Box,
+} from "@mui/material";
+import { red } from "@mui/material/colors";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import axios from "axios";
+import { styled } from "@mui/material/styles";
+import CommentSection from "..//AllPosts/CommentSection";
+import { useAuth } from "../../context/AuthContext";
 
-const ProfilePosts: FC = () => {
-  const { posts, isLoading, error } = usePosts();
-  const [userId, setUserId] = useState<string | null>(null); 
+const ExpandMore = styled(IconButton)<{ expand: boolean }>(({ theme, expand }) => ({
+  transform: expand ? "rotate(180deg)" : "rotate(0deg)",
+  marginLeft: "auto",
+  transition: theme.transitions.create("transform", {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
+
+interface Comment {
+  _id?: string;
+  content: string;
+  email: string;
+  username: string;
+  owner: string;
+  postId: string;
+}
+
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  email: string;
+  userProfileImage: string; 
+  username: string;
+  image: string;
+  comments: Comment[];
+  owner: string;
+}
+
+const UserPosts: React.FC = () => {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [expandedPostId, setExpandedPostId] = useState<string | null>(null);
+  
+ const { userId: authUserId, userEmail: authUserEmail, userUsername:authUserUsername } = useAuth();
 
   useEffect(() => {
-    const fetchUserId = async () => {
+    const fetchUserPosts = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) throw new Error("No token found!");
-
-        const response = await axios.get("http://localhost:3000/auth/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        setUserId(response.data._id); 
-      } catch (error) {
-        console.error("Error fetching user ID:", error);
+        const response = await axios.get("http://localhost:3000/post/all");
+        const allPosts: Post[] = response.data;
+        const userPosts = allPosts.filter((post) => post.owner === authUserId);
+        
+        setPosts(userPosts);
+      } catch (err) {
+        console.error("Error fetching posts:", err);
+        setError("Failed to fetch posts.");
+      } finally {
+        setIsLoading(false);
       }
     };
+    fetchUserPosts();
+  }, [authUserId]);
 
-    fetchUserId();
-  }, []);
 
-  const filteredPosts = userId ? posts.filter(post => post.owner === userId) : []; 
+  const handleExpandClick = (postId: string) => {
+    setExpandedPostId(prev => (prev === postId ? null : postId));
+  };
+
+  const handleCommentAdded = (postId: string, newComment: Comment) => {
+    setPosts((prevPosts) =>
+      prevPosts.map((post) => {
+        if (post._id === postId) {
+          return {
+            ...post,
+            comments: [...post.comments, newComment],
+          };
+        }
+        return post;
+      })
+    );
+  };
 
   return (
-    <Container sx={{ mt: 4, mb: 4 }}>
+    <Container sx={{ mt: 16, mb: 4 }}>
       {isLoading && (
         <Grid container justifyContent="center">
           <CircularProgress />
@@ -41,49 +108,83 @@ const ProfilePosts: FC = () => {
           {error}
         </Alert>
       )}
-      {filteredPosts.length === 0 ? (
+
+      {posts.length === 0 ? (
         <Typography>No posts available.</Typography>
       ) : (
-        <Grid container spacing={3} justifyContent="center" sx={{ mb: 4 }}>
-          {filteredPosts.map(post => (
-            <Grid item xs={12} md={6} lg={6} key={post._id}>
-              <Card sx={{ width: "100%", maxWidth: 500, mx: "auto", boxShadow: 4, borderRadius: 2, p: 2 }}>
-                <CardMedia component="img" height="300" image={`http://localhost:3000/${post.image}`} alt={post.title} sx={{ objectFit: "cover", borderRadius: "8px 8px 0 0" }}/><CardContent>
-                  <Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}> {post.title} </Typography>
-                  <Typography variant="body1" color="text.secondary" sx={{ flexGrow: 1 }}>
-                    {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
+        <Grid container spacing={3} justifyContent="center">
+          {posts.map((post) => (
+            <Grid item xs={12} sm={6} md={4} lg={4} key={post._id}>
+              <Card sx={{ maxWidth: 500, mx: "auto", borderRadius: 2 }}>
+                <CardHeader
+                  avatar={
+                    <Avatar
+                      src={`http://localhost:3000/${post.userProfileImage}`}
+                      sx={{ bgcolor: red[500] }}
+                    >
+                      {post.username && post.username.charAt(0).toUpperCase()}
+                    </Avatar>
+                  }
+                  title={post.email}
+                  subheader={post.username}
+                />
+                <CardMedia
+                  component="img"
+                  height="350"
+                  image={`http://localhost:3000/${post.image}`}
+                  alt={post.title}
+                  sx={{ objectFit: "-moz-initial" }}
+                />
+                <CardContent>
+                  <Typography
+                    variant="subtitle2"
+                    color="textSecondary"
+                    sx={{ fontWeight: "bold", fontSize: "1.1rem" }}
+                  >
+                    {post.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {post.content.length > 200
+                      ? `${post.content.substring(0, 200)}...`
+                      : post.content}
                   </Typography>
                 </CardContent>
-                <Button
-                variant="contained"
-                sx={{ mt: 2 }}
-                onClick={() => setExpandedPostId(expandedPostId === post._id ? null : post._id)}
-              >
-                {expandedPostId === post._id ? "Hide Comments" : "Show Comments"}
-              </Button>
-                <Collapse in={expandedPostId === post._id}>
-                  <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderRadius: 1 }}>
-                    {post.comments?.length > 0 ? (
-                      post.comments.map((comment, index) => (
-                        <Typography key={index} variant="body2" sx={{ mb: 1, pl: 2 }}>
-                          - {comment}
-                        </Typography>
-                      ))
-                    ) : (
-                      <Typography variant="body2" color="textSecondary">
-                        No comments yet.
-                      </Typography>
-                    )}
-                  </Box>
+                <CardActions disableSpacing>
+                  <ExpandMore
+                    expand={expandedPostId === post._id}
+                    onClick={() => handleExpandClick(post._id)}
+                    aria-expanded={expandedPostId === post._id}
+                    theme={undefined} // למנוע שגיאת טיפוס
+                  >
+                    <ExpandMoreIcon />
+                  </ExpandMore>
+                </CardActions>
+                <Collapse in={expandedPostId === post._id} timeout="auto" unmountOnExit>
+                  <CardContent>
+                    <Box sx={{ p: 2, bgcolor: "#f9f9f9", borderRadius: 1, mt: 2 }}>
+                      <Typography variant="h6">Comments</Typography>
+                      <CommentSection
+                        post={post}
+                        authUserId={authUserId || ""}
+                        authUserEmail={authUserEmail || ""}
+                        authUserUsername={authUserUsername || ""}
+                        onCommentAdded={(newComment) =>
+                          handleCommentAdded(post._id, {
+                            ...newComment,
+                            username: authUserUsername || "",
+                          })
+                        }
+                      />
+                    </Box>
+                  </CardContent>
                 </Collapse>
               </Card>
             </Grid>
           ))}
         </Grid>
-        
       )}
     </Container>
   );
 };
 
-export default ProfilePosts;
+export default UserPosts;
