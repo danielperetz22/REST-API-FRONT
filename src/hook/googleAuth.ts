@@ -20,20 +20,16 @@ export const handleGoogleResponse = async (
 
     console.log("Google Profile Image from API:", user.profileImage);
 
-    // ✅ Upload Google profile image to server
     const uploadedProfileImage = await uploadProfileImage(user._id, user.profileImage);
 
-    // ✅ Fix profile image path for frontend
     const profileImageUrl = uploadedProfileImage
       ? `http://localhost:3000/uploads/${uploadedProfileImage}`
       : user.profileImage;
 
     console.log("Final Profile Image URL:", profileImageUrl);
 
-    // Save user details in local storage
     localStorage.setItem("userProfileImage", profileImageUrl);
 
-    // Pass all details to login function
     login(refreshToken, user._id, user.email, user.username, profileImageUrl);
 
     navigate("/posts");
@@ -43,19 +39,13 @@ export const handleGoogleResponse = async (
   }
 };
 
-/**
- * Uploads a Google profile image to the server's `/uploads/` folder.
- */
-const uploadProfileImage = async (userId: string, googleProfileImageUrl: string): Promise<string | null> => {
+const uploadProfileImage = async (_userId: string, googleProfileImageUrl: string): Promise<string | null> => {
   try {
-    // ✅ Download image
     const imageResponse = await axios.get(googleProfileImageUrl, { responseType: "blob" });
 
-    // ✅ Create FormData for upload
     const formData = new FormData();
     formData.append("profileImage", imageResponse.data, "profile.jpg");
 
-    // ✅ Upload image to server
     const uploadResponse = await axios.put(`http://localhost:3000/auth/profile`, formData, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
