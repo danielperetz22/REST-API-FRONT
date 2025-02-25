@@ -1,10 +1,10 @@
-
 import axios from "axios";
+
 export const handleGoogleResponse = async (
   credential: string,
   navigate: (path: string) => void,
   setError: (msg: string | null) => void,
-  login: (refreshToken: string, userId: string, userEmail: string) => void // שלושה פרמטרים
+  login: (refreshToken: string, userId: string, userEmail: string, username: string, profileImage: string) => void 
 ) => {
   try {
     const response = await axios.post("http://localhost:3000/auth/google", {
@@ -20,10 +20,15 @@ export const handleGoogleResponse = async (
 
     console.log("Google Login/Register Success:", user);
 
-    // מעביר שלושה פרמטרים כמו שצריך
-    login(refreshToken, user._id, user.email);
+    login(
+      refreshToken,
+      user._id,
+      user.email,
+      user.username || "Unknown", 
+      user.profileImage || "https://example.com/default-avatar.jpg" 
+    );
 
-    alert(`Welcome, ${user.email}!`);
+    alert(`Welcome, ${user.username || user.email}!`);
     navigate("/posts");
   } catch (err) {
     console.error("Error during Google login/register:", err);

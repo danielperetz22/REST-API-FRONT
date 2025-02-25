@@ -63,7 +63,7 @@ const Login: React.FC = () => {
 
       console.log("Login Success:", data);
       
-      login(data.refreshToken, data._id , data.email); 
+      login(data.refreshToken, data._id , data.email , data.username , data.profileImage); 
       navigate("/posts");
     } catch (err) {
       console.error("Error during login:", err);
@@ -79,7 +79,7 @@ const Login: React.FC = () => {
         credentialResponse.credential,
         navigate,
         setError,
-        login 
+        login
       );
     }
   };

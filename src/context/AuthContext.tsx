@@ -5,10 +5,13 @@ interface AuthContextType {
   token: string | null;
   userId: string | null;
   userEmail: string | null;
+  username: string | null;
+  profileImage: string | null;
   isAuthenticated: boolean;
-  login: (refreshToken: string, userId: string, userEmail: string) => void;
+  login: (refreshToken: string, userId: string, userEmail: string, username: string, profileImage: string) => void;
   logout: () => Promise<void>;
 }
+
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
@@ -27,25 +30,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
   const [userId, setUserId] = useState<string | null>(localStorage.getItem('userId'));
   const [userEmail, setUserEmail] = useState<string | null>(localStorage.getItem('userEmail'));
+  const [username, setUserName] = useState<string | null>(localStorage.getItem('username'));
+  const [profileImage, setProfileImage] = useState<string | null>(localStorage.getItem('profileImage'));
 
-  // Called after a successful login (e.g., from your Login page)
-  const login = (refreshToken: string, userId: string, userEmail: string) => {
+  const login = (refreshToken: string, userId: string, userEmail: string, username: string, profileImage: string) => {
     try {
-      // Save everything in localStorage
       localStorage.setItem('token', refreshToken);
       localStorage.setItem('userId', userId);
       localStorage.setItem('userEmail', userEmail);
-
-      // Save in state
+      localStorage.setItem('username', username);
+      localStorage.setItem('profileImage', profileImage);
+  
       setToken(refreshToken);
       setUserId(userId);
       setUserEmail(userEmail);
-
-      console.log('Login success:', { refreshToken, userId, userEmail });
+      setUserName(username);
+      setProfileImage(profileImage);
+  
+      console.log('Login success:', { refreshToken, userId, userEmail, username, profileImage });
     } catch (error) {
       console.error('Failed to login:', error);
     }
   };
+  
 
   // Called to log out
   const logout = async () => {
@@ -62,11 +69,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       localStorage.removeItem('token');
       localStorage.removeItem('userId');
       localStorage.removeItem('userEmail');
+      localStorage.removeItem('username');
+      localStorage.removeItem('profileImage');
 
       // Clear state
       setToken(null);
       setUserId(null);
       setUserEmail(null);
+      setUserName(null);
+      setProfileImage(null);
     } catch (error) {
       console.error('Failed to logout:', error);
     }
@@ -82,6 +93,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         token,
         userId,
         userEmail,
+        username,
+        profileImage,
         isAuthenticated,
         login,
         logout,
