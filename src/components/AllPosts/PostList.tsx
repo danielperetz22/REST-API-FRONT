@@ -154,6 +154,12 @@ const PostsList: React.FC = () => {
     }
   };
 
+  const handleCancelEdit = () => {
+    setEditingPostId(null);
+    setEditTitle("");
+    setEditContent("");
+  };
+
   const handleDelete = async (postId: string) => {
     try {
       const token = localStorage.getItem("token");
@@ -270,11 +276,12 @@ const PostsList: React.FC = () => {
                       />
                       <Box
                         sx={{
-                          display: "flex",
-                          justifyContent: "flex-end",
+                          display: "  flex",
+                          justifyContent: "space-between",
                           mt: 2,
                         }}
                       >
+                        <button onClick={handleCancelEdit}>Cancel</button>
                         <button onClick={() => handleSaveEdit(post._id)}>
                           Save
                         </button>

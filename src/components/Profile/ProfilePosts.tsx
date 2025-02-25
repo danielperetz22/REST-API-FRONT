@@ -19,6 +19,7 @@ import {
   MenuItem,
   Snackbar,
 } from "@mui/material";
+import { red } from "@mui/material/colors";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import axios from "axios";
@@ -110,6 +111,11 @@ const UserPosts: React.FC = () => {
       })
     );
   };
+  const handleCancelEdit = () => {
+    setEditingPostId(null);
+    setEditTitle("");
+    setEditContent("");
+  };
 
   const handleDelete = async (postId: string) => {
     try {
@@ -197,6 +203,7 @@ const UserPosts: React.FC = () => {
                     post.userProfileImage && (
                       <Avatar
                         src={`http://localhost:3000/${post.userProfileImage}`}
+                        sx={{ bgcolor: red[500] }}
                       >
                         {post.username?.charAt(0).toUpperCase()}
                       </Avatar>
@@ -275,11 +282,12 @@ const UserPosts: React.FC = () => {
                       />
                       <Box
                         sx={{
-                          display: "flex",
-                          justifyContent: "flex-end",
+                          display: "  flex",
+                          justifyContent: "space-between",
                           mt: 2,
                         }}
                       >
+                        <button onClick={handleCancelEdit}>Cancel</button>
                         <button onClick={() => handleSaveEdit(post._id)}>
                           Save
                         </button>
@@ -287,16 +295,8 @@ const UserPosts: React.FC = () => {
                     </>
                   ) : (
                     <>
-                      <Typography
-                        variant="subtitle2"
-                        sx={{ fontWeight: "bold", fontSize: "1.1rem" }}
-                      >
-                        {post.title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {post.content.length > 200
-                          ? `${post.content.substring(0, 200)}...`
-                          : post.content}
+                      <Typography variant="body1" color="text.primary">
+                        {post.content}
                       </Typography>
                     </>
                   )}

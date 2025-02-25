@@ -73,7 +73,7 @@ const Register: React.FC = () => {
       const data = response.data;
       console.log("Registration Success:", response.data); 
       <Alert severity="success">User registered successfully!</Alert>
-      login(data.refreshToken, data._id, data.email);  
+      login(data.refreshToken, data._id, data.email, data.username, data.profileImage);  
       navigate("/posts"); 
     } 
     catch (err: unknown) {
