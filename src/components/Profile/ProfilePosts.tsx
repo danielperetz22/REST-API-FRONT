@@ -21,8 +21,12 @@ import axios from "axios";
 import { styled } from "@mui/material/styles";
 import CommentSection from "..//AllPosts/CommentSection";
 import { useAuth } from "../../context/AuthContext";
+import {getCorrectImageUrl} from "../../until/imageProfile";
 
-const ExpandMore = styled(IconButton)<{ expand: boolean }>(({ theme, expand }) => ({
+
+const ExpandMore = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== "expand", 
+})<{ expand: boolean }>(({ theme, expand }) => ({
   transform: expand ? "rotate(180deg)" : "rotate(0deg)",
   marginLeft: "auto",
   transition: theme.transitions.create("transform", {
@@ -119,7 +123,7 @@ const UserPosts: React.FC = () => {
                 <CardHeader
                   avatar={
                     <Avatar
-                      src={`http://localhost:3000/${post.userProfileImage}`}
+                      src={getCorrectImageUrl(post.userProfileImage)}
                       sx={{ bgcolor: red[500] }}
                     >
                       {post.username && post.username.charAt(0).toUpperCase()}
@@ -131,7 +135,7 @@ const UserPosts: React.FC = () => {
                 <CardMedia
                   component="img"
                   height="350"
-                  image={`http://localhost:3000/${post.image}`}
+                  image={getCorrectImageUrl(post.image)}
                   alt={post.title}
                   sx={{ objectFit: "-moz-initial" }}
                 />
@@ -154,7 +158,7 @@ const UserPosts: React.FC = () => {
                     expand={expandedPostId === post._id}
                     onClick={() => handleExpandClick(post._id)}
                     aria-expanded={expandedPostId === post._id}
-                    theme={undefined} // למנוע שגיאת טיפוס
+                    theme={undefined} 
                   >
                     <ExpandMoreIcon />
                   </ExpandMore>

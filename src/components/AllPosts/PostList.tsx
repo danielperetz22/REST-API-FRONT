@@ -20,8 +20,11 @@ import axios from "axios";
 import { styled } from "@mui/material/styles";
 import CommentSection from "./CommentSection";
 import { useAuth } from "../../context/AuthContext";
+import {getCorrectImageUrl} from "../../until/imageProfile";
 
-const ExpandMore = styled(IconButton)<{ expand: boolean }>(({ theme, expand }) => ({
+const ExpandMore = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== "expand", 
+})<{ expand: boolean }>(({ theme, expand }) => ({
   transform: expand ? "rotate(180deg)" : "rotate(0deg)",
   marginLeft: "auto",
   transition: theme.transitions.create("transform", {
@@ -107,29 +110,29 @@ const PostsList: React.FC = () => {
           <Grid item xs={12} sm={6} md={4} lg={4} key={post._id}>
             <Card sx={{ maxWidth: 500, mx: "auto", borderRadius: 2 }}>
             <CardHeader
-  avatar={
-    <Avatar
-      src={`http://localhost:3000/${post.userProfileImage}`}
-      sx={{ height: 44, width: 44 }}
-    >
-      {post.username && post.username.charAt(0).toUpperCase()}
-    </Avatar>
-  }
-  title={post.username}
-  subheader={post.email}
-  titleTypographyProps={{
-    variant: "h6",
-    sx: { fontWeight: "bold" },
-  }}
-  subheaderTypographyProps={{
-    variant: "body2",
-    color: "text.secondary",
-  }}
-/>
+                 avatar={
+                   <Avatar
+                      src={getCorrectImageUrl(post.userProfileImage)}
+                     sx={{ height: 44, width: 44 }}
+                    >
+                      {post.username && post.username.charAt(0).toUpperCase()}
+                    </Avatar>
+                  }
+                  title={post.username}
+                  subheader={post.email}
+                  titleTypographyProps={{
+                    variant: "h6",
+                    sx: { fontWeight: "bold" },
+                  }}
+                  subheaderTypographyProps={{
+                    variant: "body2",
+                    color: "text.secondary",
+                  }}
+                  />
               <CardMedia
                 component="img"
                 height="350"
-                image={`http://localhost:3000/${post.image}`}
+                image={getCorrectImageUrl(post.image)}
                 alt={post.title}
                 sx={{ objectFit: "-moz-initial" }}
               />
