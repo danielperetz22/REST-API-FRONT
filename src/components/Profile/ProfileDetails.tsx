@@ -31,6 +31,7 @@ const ProfileDetails= () => {
   
           console.log("Fetched user:", response.data); 
           setUser(response.data);
+          console.log("Fetched user:", user);
         } catch (error) {
           console.error("Error fetching profile:", error);
         }
