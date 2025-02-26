@@ -1,9 +1,10 @@
-export function getCorrectImageUrl(url: string) {
-    if (!url) return "";
-    console.log("Processing image URL:", url);
-    if (url.startsWith("http")) {
+export function getCorrectImageUrl(url: string | null | undefined): string {
+  if (!url) return "";
+
+
+  if (url.startsWith("http") || url.startsWith("https")) {
       return url;
-    }
-  
-    return `http://localhost:3000/${url.replace(/\\/g, "/")}`;
   }
+
+  return `http://localhost:3000/${url.replace(/\\/g, "/")}`;
+}
