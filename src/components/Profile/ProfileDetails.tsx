@@ -2,6 +2,7 @@ import { Box, Avatar, TextField, Button, Typography } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import {getCorrectImageUrl} from "../../until/imageProfile";
 
 const ProfileDetails= () => {
     interface UserProfile {
@@ -46,7 +47,11 @@ const ProfileDetails= () => {
 <Box sx={{ width:"100vw",mt: 4, mb: 4, backgroundColor: "#f9f9f7", p: 4 ,pt:12 }}>
   <Box sx={{ width:"60vw",display: "flex", alignItems: "flex-start", gap: 4,mx:"auto" }}>
     <Box sx={{ width: 200, height: 200 }}>
-      <Avatar src={user.profileImage} alt="Profile" sx={{ width: 200, height: 200 }} />
+    <Avatar
+        src={getCorrectImageUrl(user.profileImage)} // כך
+        alt="Profile"
+        sx={{ width: 200, height: 200 }}
+      />
     </Box>
     <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
       <TextField label="Email" size="small" value={user.email} InputProps={{ readOnly: true }} fullWidth />
