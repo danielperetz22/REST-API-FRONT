@@ -53,8 +53,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
   
-  
-
   const logout = async () => {
     try {
       const refreshToken = localStorage.getItem('token');

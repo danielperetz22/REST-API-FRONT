@@ -40,27 +40,41 @@ const CommentSection: React.FC<CommentSectionProps> = ({
 
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
-
+  
     try {
-      const response = await axios.post("http://localhost:3000/comment", {
-        content: newComment,
-        postId: post._id,
-        owner: authUserId,
-        email: authUserEmail,
-        username: authUserUsername,
-      });
-      // The server should return the newly created comment object
-      const createdComment: Comment = response.data;
-
-      // Clear the input
-      setNewComment("");
-
-      // Notify parent so it can update the local post comments
-      onCommentAdded(createdComment);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No authentication token found!");
+        return;
+      }
+  
+      const response = await axios.post(
+        "http://localhost:3000/comment",
+        {
+          content: newComment,
+          postId: post._id,
+          owner: authUserId,
+          email: authUserEmail,
+          username: authUserUsername,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      const createdComment: Comment = response.data.newComment; 
+      
+      
+      setNewComment(""); 
+      onCommentAdded(createdComment); 
     } catch (error) {
       console.error("Error adding comment:", error);
     }
   };
+  
+  
 
   return (
     <Box sx={{ mt: 2 }}>
