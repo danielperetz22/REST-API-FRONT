@@ -1,12 +1,23 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { TextField, Button, Box, Avatar, IconButton, Alert } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Box,
+  Avatar,
+  IconButton,
+  Alert,
+} from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 
 const EditProfilePage = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState({ email: "", username: "", profileImage: "" });
+  const [user, setUser] = useState({
+    email: "",
+    username: "",
+    profileImage: "",
+  });
   const [newUsername, setNewUsername] = useState("");
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -38,7 +49,6 @@ const EditProfilePage = () => {
         setNewEmail(response.data.email);
         setVerifyNewEmail(response.data.email);
 
-      
         if (visitCount === 0 && profileImageFromStorage) {
           setPreviewImage(profileImageFromStorage);
         } else {
@@ -99,18 +109,21 @@ const EditProfilePage = () => {
         console.log(key, value instanceof File ? value.name : value);
       }
 
-      const response = await axios.put("http://localhost:3000/auth/profile", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.put(
+        "http://localhost:3000/auth/profile",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       console.log("Server response:", response.data);
 
       if (response.data.user) {
         const updatedUser = response.data.user;
-
 
         localStorage.clear();
 
@@ -119,7 +132,7 @@ const EditProfilePage = () => {
         localStorage.setItem("userEmail", updatedUser.email);
         localStorage.setItem("userProfileImage", updatedUser.profileImage);
         localStorage.setItem("userUsername", updatedUser.username);
-        localStorage.setItem("visitCount", "1"); 
+        localStorage.setItem("visitCount", "1");
 
         setSuccess("Profile updated successfully!");
         setPreviewImage(updatedUser.profileImage);
@@ -136,34 +149,138 @@ const EditProfilePage = () => {
   };
 
   return (
-    <Box sx={{ width: "100vw", mt: 4, mb: 4, backgroundColor: "#fefbf5", p: 4, pt: 12 }}>
-      <Box sx={{ width: "60vw", display: "flex", alignItems: "flex-start", gap: 4, mx: "auto" }}>
+    <Box
+      sx={{
+        width: "100vw",
+        mt: 4,
+        mb: 4,
+        backgroundColor: "#fefbf5",
+        p: 4,
+        pt: 12,
+      }}
+    >
+      <Box
+        sx={{
+          width: "60vw",
+          display: "flex",
+          alignItems: "flex-start",
+          gap: 4,
+          mx: "auto",
+        }}
+      >
         <Box sx={{ width: 200, height: 200, position: "relative" }}>
-          <Avatar src={previewImage || user.profileImage} alt="Profile Preview" sx={{ width: 200, height: 200 }} />
+          <Avatar
+            src={previewImage || user.profileImage}
+            alt="Profile Preview"
+            sx={{ width: 200, height: 200 }}
+          />
           <IconButton
             color="default"
             component="label"
-            sx={{ position: "absolute", bottom: 10, right: 10, backgroundColor: "white", boxShadow: 1, borderRadius: "50%", width: 40, height: 40 }}
+            sx={{
+              position: "absolute",
+              bottom: 10,
+              right: 10,
+              backgroundColor: "white",
+              boxShadow: 1,
+              borderRadius: "50%",
+              width: 40,
+              height: 40,
+            }}
           >
             <AddPhotoAlternateOutlinedIcon />
-            <input type="file" accept="image/*" hidden onChange={handleFileChange} />
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={handleFileChange}
+            />
           </IconButton>
         </Box>
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-          <TextField label="Email" size="small" variant="outlined" fullWidth value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
-          <TextField label="Verify Email" size="small" variant="outlined" fullWidth value={verifyNewEmail} onChange={(e) => setVerifyNewEmail(e.target.value)} />
-          <TextField label="Username" size="small" variant="outlined" fullWidth value={newUsername} onChange={(e) => setNewUsername(e.target.value)} />
-          <TextField label="Old Password" type="password" size="small" variant="outlined" fullWidth value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} />
-          <TextField label="New Password" type="password" size="small" variant="outlined" fullWidth value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-          <TextField label="Confirm New Password" type="password" size="small" variant="outlined" fullWidth value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
+          <TextField
+            label="Email"
+            size="small"
+            variant="outlined"
+            fullWidth
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+          />
+          <TextField
+            label="Verify Email"
+            size="small"
+            variant="outlined"
+            fullWidth
+            value={verifyNewEmail}
+            onChange={(e) => setVerifyNewEmail(e.target.value)}
+          />
+          <TextField
+            label="Username"
+            size="small"
+            variant="outlined"
+            fullWidth
+            value={newUsername}
+            onChange={(e) => setNewUsername(e.target.value)}
+          />
+          <TextField
+            label="Old Password"
+            type="password"
+            size="small"
+            variant="outlined"
+            fullWidth
+            value={oldPassword}
+            onChange={(e) => setOldPassword(e.target.value)}
+          />
+          <TextField
+            label="New Password"
+            type="password"
+            size="small"
+            variant="outlined"
+            fullWidth
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+          <TextField
+            label="Confirm New Password"
+            type="password"
+            size="small"
+            variant="outlined"
+            fullWidth
+            value={confirmNewPassword}
+            onChange={(e) => setConfirmNewPassword(e.target.value)}
+          />
 
           {error && <Alert severity="error">{error}</Alert>}
           {success && <Alert severity="success">{success}</Alert>}
-          <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-            <Button variant="outlined" component={Link} to="/profile" sx={{ color: "#eb341f", borderColor: "#eb341f", textTransform: "none", alignSelf: "flex-end" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+            }}
+          >
+            <Button
+              variant="outlined"
+              component={Link}
+              to="/profile"
+              sx={{
+                color: "#eb341f",
+                borderColor: "#eb341f",
+                textTransform: "none",
+                alignSelf: "flex-end",
+              }}
+            >
               Return to Profile
             </Button>
-            <Button variant="contained" onClick={handleUpdateProfile} sx={{ backgroundColor: "#eb341f", textTransform: "none", alignSelf: "flex-start" }}>
+            <Button
+              variant="contained"
+              onClick={handleUpdateProfile}
+              sx={{
+                backgroundColor: "#eb341f",
+                textTransform: "none",
+                alignSelf: "flex-start",
+              }}
+            >
               Save Changes
             </Button>
           </Box>

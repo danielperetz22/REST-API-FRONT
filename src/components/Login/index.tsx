@@ -103,7 +103,7 @@ const Login: React.FC = () => {
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
           <form onSubmit={handleSubmit}>
-            <Box sx={{ display: "flex", justifyContent: "center", flexDirection: "column", gap: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", flexDirection: "column", gap: 1 }}>
               <TextField id="email" label="Email" size="small" value={email} placeholder="Enter your email" onChange={(e) => setEmail(e.target.value)} />
               <TextField id="password" label="Password" size="small" type="password" value={password} placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
               <Button type="submit" variant="contained" fullWidth>Submit</Button>

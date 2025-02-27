@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AppBar, Box, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Toolbar, Typography, Snackbar, Alert } from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
 
 export const Header: React.FC = () => {
@@ -10,8 +10,7 @@ export const Header: React.FC = () => {
 
   useEffect(() => {
     console.log("Header updated, isAuthenticated:", isAuthenticated);
-  }, [isAuthenticated]); 
-  
+  }, [isAuthenticated]);
 
   const handleLogout = async () => {
     await logout();
@@ -23,46 +22,90 @@ export const Header: React.FC = () => {
     }, 3000);
   };
 
+  const handleCloseSnackbar = () => {
+    setLogoutMessage(null);
+  };
+
   return (
-    <AppBar sx={{backgroundColor: "#fefbf5",boxShadow: "none",}}>
-      <Toolbar>
-        <Box>
-          <Typography
-            component={Link}
-            to="/"
-            variant="overline"
-            fontSize={16}
-            sx={{ textDecoration: "none", color:"#eb341f", fontWeight: "bold", flexGrow: 1, marginLeft: 3 }}
-          >
-            HOME
-          </Typography>
-        </Box>
-        <Box sx={{ display: "flex", justifyContent: "flex-end", marginLeft: "auto" }}>
-          {logoutMessage && <Typography variant="body2" color="error" sx={{ marginRight: 2 }}>{logoutMessage}</Typography>}
-          {isAuthenticated ? (
-            <>
-              <Typography component={Link} to="/posts" variant="overline" fontSize={14} sx={{ textDecoration: "none", color:"#eb341f", flexGrow: 1, marginRight: 3 }}>
-                FEED
-              </Typography>
-              <Typography component={Link} to="/profile" variant="overline" fontSize={14} sx={{ textDecoration: "none", color:"#eb341f", flexGrow: 1, marginRight: 3 }}>
-                PROFILE
-              </Typography>
-              <Typography variant="overline" fontSize={14} sx={{ textDecoration: "none", color:"#eb341f", cursor: "pointer", marginRight: 3 }} onClick={handleLogout}>
-                LOGOUT
-              </Typography>
-            </>
-          ) : (
-            <Box sx={{ display: "flex", justifyContent: "flex-end", marginLeft: "auto" }}>
-              <Typography component={Link} to="/register" variant="overline" fontSize={14} sx={{ textDecoration: "none",color:"#eb341f", cursor: "pointer", marginRight: 3 }}>
-                GET STARTED
-              </Typography>
-              <Typography component={Link} to="/login" variant="overline" fontSize={14} sx={{ textDecoration: "none", color:"#eb341f", cursor: "pointer", marginRight: 3 }}>
-                LOGIN
-              </Typography>
-            </Box>
-          )}
-        </Box>
-      </Toolbar>
-    </AppBar>
+    <>
+      <AppBar sx={{ backgroundColor: "#fefbf5", boxShadow: "none" }}>
+        <Toolbar>
+          <Box>
+            <Typography
+              component={Link}
+              to="/"
+              variant="overline"
+              fontSize={16}
+              sx={{ textDecoration: "none", color: "#eb341f", fontWeight: "bold", flexGrow: 1, marginLeft: 3 }}
+            >
+              HOME
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", marginLeft: "auto" }}>
+            {isAuthenticated ? (
+              <>
+                <Typography
+                  component={Link}
+                  to="/posts"
+                  variant="overline"
+                  fontSize={14}
+                  sx={{ textDecoration: "none", color: "#eb341f", flexGrow: 1, marginRight: 3 }}
+                >
+                  FEED
+                </Typography>
+                <Typography
+                  component={Link}
+                  to="/profile"
+                  variant="overline"
+                  fontSize={14}
+                  sx={{ textDecoration: "none", color: "#eb341f", flexGrow: 1, marginRight: 3 }}
+                >
+                  PROFILE
+                </Typography>
+                <Typography
+                  variant="overline"
+                  fontSize={14}
+                  sx={{ textDecoration: "none", color: "#eb341f", cursor: "pointer", marginRight: 3 }}
+                  onClick={handleLogout}
+                >
+                  LOGOUT
+                </Typography>
+              </>
+            ) : (
+              <Box sx={{ display: "flex", justifyContent: "flex-end", marginLeft: "auto" }}>
+                <Typography
+                  component={Link}
+                  to="/register"
+                  variant="overline"
+                  fontSize={14}
+                  sx={{ textDecoration: "none", color: "#eb341f", cursor: "pointer", marginRight: 3 }}
+                >
+                  GET STARTED
+                </Typography>
+                <Typography
+                  component={Link}
+                  to="/login"
+                  variant="overline"
+                  fontSize={14}
+                  sx={{ textDecoration: "none", color: "#eb341f", cursor: "pointer", marginRight: 3 }}
+                >
+                  LOGIN
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <Snackbar
+        open={Boolean(logoutMessage)}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
+          {logoutMessage}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
