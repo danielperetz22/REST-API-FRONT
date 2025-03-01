@@ -14,7 +14,6 @@ interface AuthContextType {
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
-// Hook to consume the context easily
 export const useAuth = () => {
   const context = React.useContext(AuthContext);
   if (!context) {

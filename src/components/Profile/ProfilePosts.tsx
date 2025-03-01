@@ -98,19 +98,19 @@
       setExpandedPostId(prev => (prev === postId ? null : postId));
     };
 
-    const handleCommentAdded = (postId: string, newComment: Comment) => {
-      setPosts((prevPosts) =>
-        prevPosts.map((post) => {
-          if (post._id === postId) {
-            return {
-              ...post,
-              comments: [...post.comments, newComment],
-            };
-          }
-          return post;
-        })
-      );
-    };
+    // const handleCommentAdded = (postId: string, newComment: Comment) => {
+    //   setPosts((prevPosts) =>
+    //     prevPosts.map((post) => {
+    //       if (post._id === postId) {
+    //         return {
+    //           ...post,
+    //           comments: [...post.comments, newComment],
+    //         };
+    //       }
+    //       return post;
+    //     })
+    //   );
+    // };
     const handleDelete = async (postId: string) => {
       try {
         const token = localStorage.getItem("token");
@@ -332,17 +332,20 @@
                         >
                           <Typography variant="h6">Comments</Typography>
                           <CommentSection
-                            post={post}
-                            authUserId={authUserId || ""}
-                            authUserEmail={authUserEmail || ""}
-                            authUserUsername={authUserUsername || ""}
-                            onCommentAdded={(newComment) =>
-                              handleCommentAdded(post._id, {
-                                ...newComment,
-                                username: authUserUsername || "",
-                              })
-                            }
-                          />
+                          post={post}
+                          authUserId={authUserId || ""}
+                          authUserEmail={authUserEmail || ""}
+                          authUserUsername={authUserUsername || ""}
+                          onCommentsUpdated={(updatedComments) => {
+                            setPosts((prevPosts) =>
+                              prevPosts.map((p) =>
+                                p._id === post._id
+                                  ? { ...p, comments: updatedComments }
+                                  : p
+                              )
+                            );
+                          }}
+                        />
                         </Box>
                       )}
                     </CardContent>

@@ -18,6 +18,7 @@ import {
   MenuItem,
   TextField,
   Snackbar,
+  Button,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -25,10 +26,10 @@ import axios from "axios";
 import { styled } from "@mui/material/styles";
 import CommentSection from "./CommentSection";
 import { useAuth } from "../../context/AuthContext";
-import {getCorrectImageUrl} from "../../until/imageProfile";
+import { getCorrectImageUrl } from "../../until/imageProfile";
 
 const ExpandMore = styled(IconButton, {
-  shouldForwardProp: (prop) => prop !== "expand", 
+  shouldForwardProp: (prop) => prop !== "expand",
 })<{ expand: boolean }>(({ theme, expand }) => ({
   transform: expand ? "rotate(180deg)" : "rotate(0deg)",
   marginLeft: "auto",
@@ -69,7 +70,13 @@ const PostsList: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const { userId: authUserId, userEmail: authUserEmail, userUsername:authUserUsername } = useAuth();
+
+  // מקבל מידע מההקשר של המשתמש המחובר (Context)
+  const {
+    userId: authUserId,
+    userEmail: authUserEmail,
+    userUsername: authUserUsername,
+  } = useAuth();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -90,20 +97,7 @@ const PostsList: React.FC = () => {
     setExpandedPostId((prevId) => (prevId === postId ? null : postId));
   };
 
-  const handleCommentAdded = (postId: string, newComment: Comment) => {
-    setPosts((prevPosts) =>
-      prevPosts.map((post) => {
-        if (post._id === postId) {
-          return {
-            ...post,
-            comments: [...post.comments, newComment],
-          };
-        }
-        return post;
-      })
-    );
-  };
-
+  // תפריט עריכה/מחיקה לפוסטים
   const handleMenuClick = (
     event: React.MouseEvent<HTMLElement>,
     postId: string
@@ -121,6 +115,7 @@ const PostsList: React.FC = () => {
     setSnackbarOpen(false);
   };
 
+  // התחלת עריכת פוסט
   const handleEditClick = (post: Post) => {
     setEditingPostId(post._id);
     setEditTitle(post.title);
@@ -128,6 +123,7 @@ const PostsList: React.FC = () => {
     handleMenuClose();
   };
 
+  // שמירת עריכת פוסט
   const handleSaveEdit = async (postId: string) => {
     try {
       const token = localStorage.getItem("token");
@@ -150,12 +146,14 @@ const PostsList: React.FC = () => {
     }
   };
 
+  // ביטול עריכת פוסט
   const handleCancelEdit = () => {
     setEditingPostId(null);
     setEditTitle("");
     setEditContent("");
   };
 
+  // מחיקת פוסט
   const handleDelete = async (postId: string) => {
     try {
       const token = localStorage.getItem("token");
@@ -170,7 +168,6 @@ const PostsList: React.FC = () => {
       console.error("Error deleting post:", err);
     }
   };
-
 
   return (
     <Container sx={{ mt: 16, mb: 4 }}>
@@ -209,6 +206,7 @@ const PostsList: React.FC = () => {
                     </Typography>
                   }
                   action={
+                    // מציג אייקון עריכה/מחיקה רק אם זה הפוסט של המשתמש
                     authUserId === post.owner && (
                       <>
                         <IconButton
@@ -219,9 +217,7 @@ const PostsList: React.FC = () => {
                         </IconButton>
                         <Menu
                           anchorEl={anchorEl}
-                          open={
-                            Boolean(anchorEl) && selectedPostId === post._id
-                          }
+                          open={Boolean(anchorEl) && selectedPostId === post._id}
                           onClose={handleMenuClose}
                         >
                           <MenuItem onClick={() => handleEditClick(post)}>
@@ -245,7 +241,7 @@ const PostsList: React.FC = () => {
                 />
 
                 <CardContent>
-                  {/* Toggle between edit mode and view mode */}
+                  {/* במצב עריכה מציג טופס, אחרת טקסט רגיל */}
                   {editingPostId === post._id ? (
                     <>
                       <TextField
@@ -267,15 +263,20 @@ const PostsList: React.FC = () => {
                       />
                       <Box
                         sx={{
-                          display: "  flex",
+                          display: "flex",
                           justifyContent: "space-between",
                           mt: 2,
                         }}
                       >
-                        <button onClick={handleCancelEdit}>Cancel</button>
-                        <button onClick={() => handleSaveEdit(post._id)}>
+                        <Button variant="outlined" onClick={handleCancelEdit}>
+                          Cancel
+                        </Button>
+                        <Button
+                          variant="contained"
+                          onClick={() => handleSaveEdit(post._id)}
+                        >
                           Save
-                        </button>
+                        </Button>
                       </Box>
                     </>
                   ) : (
@@ -296,6 +297,7 @@ const PostsList: React.FC = () => {
                 </CardContent>
 
                 <CardActions disableSpacing>
+                  {/* כפתור לפתיחה/סגירת תגובות (לא יוצג במצב עריכה) */}
                   {editingPostId !== post._id && (
                     <ExpandMore
                       expand={expandedPostId === post._id}
@@ -313,6 +315,7 @@ const PostsList: React.FC = () => {
                   unmountOnExit
                 >
                   <CardContent>
+                    {/* אם לא בעריכת פוסט, מציגים את אזור התגובות */}
                     {editingPostId !== post._id && (
                       <Box
                         sx={{
@@ -323,17 +326,22 @@ const PostsList: React.FC = () => {
                         }}
                       >
                         <Typography variant="h6">Comments</Typography>
+
+                        {/** קומפוננטת התגובות */}
                         <CommentSection
                           post={post}
                           authUserId={authUserId || ""}
                           authUserEmail={authUserEmail || ""}
                           authUserUsername={authUserUsername || ""}
-                          onCommentAdded={(newComment) =>
-                            handleCommentAdded(post._id, {
-                              ...newComment,
-                              username: authUserUsername || "",
-                            })
-                          }
+                          onCommentsUpdated={(updatedComments) => {
+                            setPosts((prevPosts) =>
+                              prevPosts.map((p) =>
+                                p._id === post._id
+                                  ? { ...p, comments: updatedComments }
+                                  : p
+                              )
+                            );
+                          }}
                         />
                       </Box>
                     )}
