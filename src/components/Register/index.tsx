@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import "./Register.css";
-import {TextField,Button,Avatar,Box, Typography, Alert, IconButton, Grid} from "@mui/material";
+import { TextField, Button, Avatar, Box, Typography, Alert, IconButton, Grid } from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from '@mui/icons-material/AddPhotoAlternateOutlined';
 import axios from "axios";
 import { handleGoogleResponse } from "../../hook/googleAuth";
@@ -13,6 +13,7 @@ const Register: React.FC = () => {
   const [verifyEmail, setVerifyEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -64,6 +65,11 @@ const Register: React.FC = () => {
       return;
     }
 
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     try {
       const response = await axios.post("http://localhost:3000/auth/register", formData, {
         headers: {
@@ -73,7 +79,7 @@ const Register: React.FC = () => {
       const data = response.data;
       console.log("Registration Success:", response.data); 
       <Alert severity="success">User registered successfully!</Alert>
-      login(data.refreshToken, data._id, data.email);  
+      login(data.refreshToken, data._id, data.email, data.username, data.profileImage);  
       navigate("/posts"); 
     } 
     catch (err: unknown) {
@@ -131,7 +137,7 @@ const Register: React.FC = () => {
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
           <form onSubmit={handleSubmit}>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
               {/* Profile Image */}
               <Box sx={{ display: "flex", alignItems: "flex-end", justifyContent: "center", gap: 1, textAlign: "center", mb: 3 }}>
                 {previewImage ? (
@@ -156,6 +162,9 @@ const Register: React.FC = () => {
                 
               {/* Password Field */}
               <TextField id="password" label="Password" size="small" type="password" value={password} placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
+              
+              {/* Confirm Password Field */}
+              <TextField id="confirm-password" label="Confirm Password" size="small" type="password" value={confirmPassword} placeholder="Re-enter your password" onChange={(e) => setConfirmPassword(e.target.value)} />
 
               {/* Submit Button */}
               <Button type="submit" variant="contained" fullWidth>Submit</Button>
