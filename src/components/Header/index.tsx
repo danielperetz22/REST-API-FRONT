@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AppBar, Box, Toolbar, Typography, Snackbar, Alert } from "@mui/material";
+import { AppBar, Box, Toolbar, Typography, Snackbar } from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
 
 export const Header: React.FC = () => {
@@ -100,12 +100,9 @@ export const Header: React.FC = () => {
         open={Boolean(logoutMessage)}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: '100%' }}>
-          {logoutMessage}
-        </Alert>
-      </Snackbar>
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        message={logoutMessage}
+      />
     </>
   );
 };

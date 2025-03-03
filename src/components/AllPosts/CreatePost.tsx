@@ -15,7 +15,6 @@ import {
   IconButton,
   Box,
   Snackbar,
-  Alert,
 } from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import { useAuth } from "../../context/AuthContext";
@@ -29,7 +28,7 @@ const CreatePost = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [loadingAI, setLoadingAI] = useState(false); // AI Loading state
+  const [loadingAI, setLoadingAI] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { userProfileImage, userUsername, userEmail } = useAuth();
@@ -186,27 +185,27 @@ const CreatePost = () => {
               label="Post Content"
               fullWidth
               multiline
-              rows={3}
+              rows={5}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               margin="dense"
               variant="outlined"
             />
-            <Button 
-              variant="contained" 
-              color="secondary" 
-              onClick={handleGenerateAIContent} 
-              disabled={loadingAI}
-              sx={{ minWidth: 150 }}
-            >
-              {loadingAI ? <CircularProgress size={24} color="inherit" /> : "Generate with AI"}
-            </Button>
+
           </Box>
           <Box sx={{ mt: 3, textAlign: "center" }}>
+          <Button 
+              variant="contained" 
+              fullWidth
+              onClick={handleGenerateAIContent} 
+              disabled={loadingAI}
+            >
+              {loadingAI ? <CircularProgress size={24} color="inherit" /> : "Generate post content with AI"}
+            </Button>
             <Button
+              sx={{ mt: 1 }}
               type="submit"
               variant="contained"
-              color="primary"
               fullWidth
               disabled={loading}
               onClick={handleSubmit}
@@ -216,16 +215,13 @@ const CreatePost = () => {
           </Box>
         </CardContent>
       </Card>
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
-          Post created successfully!
-        </Alert>
-      </Snackbar>
+            <Snackbar
+              open={snackbarOpen}
+              autoHideDuration={6000}
+              onClose={handleSnackbarClose}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+              message="Post  deleted successfully"
+            />
     </Container>
     </Box>
   );

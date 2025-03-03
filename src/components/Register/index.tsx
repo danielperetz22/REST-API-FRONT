@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import "./Register.css";
 import {
   TextField,
   Button,
@@ -141,7 +140,7 @@ const Register: React.FC = () => {
   };
 
   return (
-    <Grid container style={{ minHeight: "100vh", width: "100vw" }}>
+    <Grid container style={{ minHeight: "100%", width: "100%" }}>
       {/* Left Section */}
       <Grid
         item
@@ -177,7 +176,8 @@ const Register: React.FC = () => {
           <Typography
             variant="subtitle1"
             component="p"
-            sx={{ marginTop: "1rem", color: "#352d2a" }}
+            fontFamily= "Dancing Script"
+            sx={{ marginTop: "1rem", color: "#352d2a", fontSize: "1.5rem" }}
           >
             Here for the first time? Let's get you settled in
           </Typography>

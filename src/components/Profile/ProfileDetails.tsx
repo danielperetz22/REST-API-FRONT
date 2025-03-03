@@ -27,7 +27,6 @@ const ProfileDetails = () => {
         const response = await axios.get("http://localhost:3000/auth/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log("Fetched user profile:", response.data);
 
         console.log("Fetched user:", response.data);
         setUser(response.data);
@@ -43,12 +42,10 @@ const ProfileDetails = () => {
   if (!user) {
     return <Typography>Loading...</Typography>;
   }
-  console.log("User Profile Image:", profileImage);
-  console.log("Avatar Image URL:", getCorrectImageUrl(user.profileImage));
   return (
     <Box
       sx={{
-        width: "100vw",
+        width: "100%",
         mt: 4,
         mb: 4,
         backgroundColor: "#F7F5F2",

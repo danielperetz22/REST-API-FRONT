@@ -1,11 +1,9 @@
-import React from "react";
 import { Box, Typography, Stack, Card, CardHeader, CardMedia, CardContent, Avatar, IconButton, Grid } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 export const HeroSection2 = () => {
     return (
         <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
-            {/* Hero Section */}
             <Box sx={{ width: "100%", minHeight: "450px", display: "flex", bgcolor: "#352d2a", justifyContent: "center", alignItems: "center", fontFamily: "inherit" }}>
                 <Stack direction="column" alignItems="center" spacing={1}>
                     <Typography sx={{ color: "white", fontSize: "3rem", fontWeight: 800, textAlign: "center", pt: "rem",fontFamily: "monospace" }}>
@@ -17,7 +15,6 @@ export const HeroSection2 = () => {
                 </Stack>
             </Box>
 
-            {/* Welcome Section */}
             <Box sx={{ width: "100%", minHeight: "400px", display: "flex", bgcolor: "#FEFCF8", alignItems: "center", justifyContent: "center", padding: 4 }}>
                 <Box sx={{ display: "flex", width: "100%", maxWidth: "1400px", gap: 6 }}>
                     <Box sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
@@ -39,7 +36,6 @@ export const HeroSection2 = () => {
                 </Box>
             </Box>
 
-            {/* Example Posts Introduction */}
             <Box sx={{ width: "100%", textAlign: "center", padding: 4, bgcolor: "#EFECE8" }}>
                 <Typography sx={{ fontSize: "2.5rem", fontWeight: "bold", color: "#352d2a",fontFamily: "monospace" }}>
                     See What Our Members Are Sharing!
@@ -50,15 +46,14 @@ export const HeroSection2 = () => {
                 </Typography>
             </Box>
 
-            {/* Example Posts */}
             <Box sx={{ width: "100%", display: "flex", justifyContent: "center", padding: 4, bgcolor: "#EFECE8" }}>
                 <Grid container spacing={4} justifyContent="center">
                     
-                    {/* Example Post 1 - Harry Potter */}
                     <Grid item xs={12} sm={8} md={6} lg={5}>
                         <Card sx={{ maxWidth: 700, mx: "auto", borderRadius: 2 }}>
                             <CardHeader
-                                avatar={<Avatar src="https://randomuser.me/api/portraits/men/32.jpg" />}
+                                avatar={<Avatar src="/src/assets/BODO.jpg" />}
+
                                 title={<Typography sx={{ fontWeight: "bold" }}>Bodo</Typography>}
                                 subheader="bodo@example.com"
                                 action={<IconButton aria-label="settings"><MoreVertIcon /></IconButton>}
@@ -83,11 +78,10 @@ export const HeroSection2 = () => {
                         </Card>
                     </Grid>
 
-                    {/* Example Post 2 - The Stranger */}
                     <Grid item xs={12} sm={8} md={6} lg={5}>
                         <Card sx={{ maxWidth: 700, mx: "auto", borderRadius: 2 }}>
                             <CardHeader
-                                avatar={<Avatar src="https://randomuser.me/api/portraits/women/45.jpg" />}
+                                avatar={<Avatar src="/src/assets/JHONNY.jpg" />}
                                 title={<Typography sx={{ fontWeight: "bold" }}>Jhonny</Typography>}
                                 subheader="jhonny@example.com"
                                 action={<IconButton aria-label="settings"><MoreVertIcon /></IconButton>}

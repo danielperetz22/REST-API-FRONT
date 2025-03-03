@@ -104,7 +104,6 @@ const EditProfilePage = () => {
         formData.append("confirmNewPassword", confirmNewPassword);
       }
 
-      console.log("FormData contents:");
       for (const [key, value] of formData.entries()) {
         console.log(key, value instanceof File ? value.name : value);
       }
@@ -119,8 +118,6 @@ const EditProfilePage = () => {
           },
         }
       );
-
-      console.log("Server response:", response.data);
 
       if (response.data.user) {
         const updatedUser = response.data.user;
@@ -151,8 +148,8 @@ const EditProfilePage = () => {
   return (
     <Box
       sx={{
-        width: "100vw",
-        height: "100vh",
+        width: "100%",
+        height: "100%",
         mt: 4,
         backgroundColor: "#F7F5F2",
         p: 4,

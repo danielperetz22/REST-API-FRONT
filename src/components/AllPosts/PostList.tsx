@@ -71,7 +71,6 @@ const PostsList: React.FC = () => {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  // מקבל מידע מההקשר של המשתמש המחובר (Context)
   const {
     userId: authUserId,
     userEmail: authUserEmail,
@@ -97,7 +96,6 @@ const PostsList: React.FC = () => {
     setExpandedPostId((prevId) => (prevId === postId ? null : postId));
   };
 
-  // תפריט עריכה/מחיקה לפוסטים
   const handleMenuClick = (
     event: React.MouseEvent<HTMLElement>,
     postId: string
@@ -115,7 +113,6 @@ const PostsList: React.FC = () => {
     setSnackbarOpen(false);
   };
 
-  // התחלת עריכת פוסט
   const handleEditClick = (post: Post) => {
     setEditingPostId(post._id);
     setEditTitle(post.title);
@@ -123,7 +120,6 @@ const PostsList: React.FC = () => {
     handleMenuClose();
   };
 
-  // שמירת עריכת פוסט
   const handleSaveEdit = async (postId: string) => {
     try {
       const token = localStorage.getItem("token");
@@ -146,14 +142,12 @@ const PostsList: React.FC = () => {
     }
   };
 
-  // ביטול עריכת פוסט
   const handleCancelEdit = () => {
     setEditingPostId(null);
     setEditTitle("");
     setEditContent("");
   };
 
-  // מחיקת פוסט
   const handleDelete = async (postId: string) => {
     try {
       const token = localStorage.getItem("token");
