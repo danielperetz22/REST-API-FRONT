@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import axios from "axios";
+import postService from "../../services/post_service"; 
 import {
   Container,
   Card,
@@ -28,6 +29,7 @@ const CreatePost = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingAI, setLoadingAI] = useState(false); // AI Loading state
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { userProfileImage, userUsername, userEmail } = useAuth();
@@ -38,6 +40,24 @@ const CreatePost = () => {
       const file = e.target.files[0];
       setImage(file);
       setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleGenerateAIContent = async () => {
+    if (!title) {
+      setError("Please enter a title before generating content.");
+      return;
+    }
+
+    setLoadingAI(true);
+    try {
+      const aiContent = await postService.generateBookDescription(title, "A social media post", "engaging");
+      setContent(aiContent);
+    } catch (error) {
+      setError("Failed to generate AI content.");
+      console.error("AI Generation Error:", error);
+    } finally {
+      setLoadingAI(false);
     }
   };
 
@@ -161,16 +181,27 @@ const CreatePost = () => {
             margin="dense"
             variant="outlined"
           />
-          <TextField
-            label="Post Content"
-            fullWidth
-            multiline
-            rows={3}
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            margin="dense"
-            variant="outlined"
-          />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <TextField
+              label="Post Content"
+              fullWidth
+              multiline
+              rows={3}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              margin="dense"
+              variant="outlined"
+            />
+            <Button 
+              variant="contained" 
+              color="secondary" 
+              onClick={handleGenerateAIContent} 
+              disabled={loadingAI}
+              sx={{ minWidth: 150 }}
+            >
+              {loadingAI ? <CircularProgress size={24} color="inherit" /> : "Generate with AI"}
+            </Button>
+          </Box>
           <Box sx={{ mt: 3, textAlign: "center" }}>
             <Button
               type="submit"

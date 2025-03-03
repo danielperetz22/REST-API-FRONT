@@ -3,7 +3,7 @@ import axios ,{CanceledError }from "axios";
 export { CanceledError };
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.BACK_API_URL,
+  baseURL: import.meta.env.BACK_API_URL || "http://localhost:3000",
 });
 
 
