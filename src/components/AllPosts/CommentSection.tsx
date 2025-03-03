@@ -44,9 +44,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editedContent, setEditedContent] = useState<string>("");
 
-  /**
-   * הוספת תגובה חדשה
-   */
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
 
