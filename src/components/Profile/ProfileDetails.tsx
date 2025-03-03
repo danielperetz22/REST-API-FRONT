@@ -51,7 +51,7 @@ const ProfileDetails = () => {
         width: "100vw",
         mt: 4,
         mb: 4,
-        backgroundColor: "#fefbf5",
+        backgroundColor: "#F7F5F2",
         p: 4,
         pt: 12,
       }}
@@ -65,11 +65,11 @@ const ProfileDetails = () => {
           mx: "auto",
         }}
       >
-        <Box sx={{ width: 200, height: 200, position: "relative" }}>
+        <Box sx={{ width: 250, height: 250, position: "relative" }}>
           <Avatar
             src={profileImage ? getCorrectImageUrl(profileImage) : ""}
             alt="Profile"
-            sx={{ width: 200, height: 200 }}
+            sx={{ width: 250, height: 250 }}
           />
         </Box>
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
@@ -92,11 +92,9 @@ const ProfileDetails = () => {
             component={Link}
             to="/edit_profile"
             sx={{
-              mt: "8%",
+              mt: "15%",
               textTransform: "none",
               alignSelf: "flex-end",
-              color: "#eb341f",
-              borderColor: "#eb341f",
             }}
           >
             Edit Profile

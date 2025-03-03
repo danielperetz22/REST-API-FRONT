@@ -98,19 +98,6 @@
       setExpandedPostId(prev => (prev === postId ? null : postId));
     };
 
-    // const handleCommentAdded = (postId: string, newComment: Comment) => {
-    //   setPosts((prevPosts) =>
-    //     prevPosts.map((post) => {
-    //       if (post._id === postId) {
-    //         return {
-    //           ...post,
-    //           comments: [...post.comments, newComment],
-    //         };
-    //       }
-    //       return post;
-    //     })
-    //   );
-    // };
     const handleDelete = async (postId: string) => {
       try {
         const token = localStorage.getItem("token");
@@ -181,7 +168,7 @@
     };
   
     return (
-      <Container sx={{ mt: 16, mb: 4 }}>
+      <Container sx={{ mt: 4, mb: 4 }}>
         {isLoading && (
           <Grid container justifyContent="center">
             <CircularProgress />
@@ -196,10 +183,10 @@
         {posts.length === 0 ? (
           <Typography>No posts available.</Typography>
         ) : (
-          <Grid container spacing={3} justifyContent="center">
-            {posts.map((post) => (
-              <Grid item xs={12} sm={6} md={4} lg={4} key={post._id}>
-                <Card sx={{ maxWidth: 500, mx: "auto", borderRadius: 2 }}>
+        <Grid container spacing={5} justifyContent="center">
+          {posts.map((post) => (
+            <Grid item xs={12} sm={8} md={6} lg={6} key={post._id}>
+              <Card sx={{ maxWidth: 700, mx: "auto", borderRadius: 2 }}>
                   <CardHeader
                     avatar={<Avatar src={getCorrectImageUrl(post.userProfileImage)} />}
                     title={
@@ -324,13 +311,9 @@
                       {editingPostId !== post._id && (
                         <Box
                           sx={{
-                            p: 2,
-                            bgcolor: "#f9f9f9",
                             borderRadius: 1,
-                            mt: 2,
                           }}
                         >
-                          <Typography variant="h6">Comments</Typography>
                           <CommentSection
                           post={post}
                           authUserId={authUserId || ""}

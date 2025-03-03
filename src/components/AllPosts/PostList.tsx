@@ -170,6 +170,7 @@ const PostsList: React.FC = () => {
   };
 
   return (
+    <Box sx={{ backgroundColor: "#F7F5F2",height: "100%",width: "100%" }}>
     <Container sx={{ mt: 16, mb: 4 }}>
       {isLoading && (
         <Grid container justifyContent="center">
@@ -185,10 +186,10 @@ const PostsList: React.FC = () => {
       {posts.length === 0 ? (
         <Typography>No posts available.</Typography>
       ) : (
-        <Grid container spacing={3} justifyContent="center">
+        <Grid container spacing={5} justifyContent="center">
           {posts.map((post) => (
-            <Grid item xs={12} sm={6} md={4} lg={4} key={post._id}>
-              <Card sx={{ maxWidth: 500, mx: "auto", borderRadius: 2 }}>
+            <Grid item xs={12} sm={8} md={6} lg={6} key={post._id}>
+              <Card sx={{ maxWidth: 700, mx: "auto", borderRadius: 2 }}>
                 <CardHeader
                   avatar={<Avatar src={getCorrectImageUrl(post.userProfileImage)} />}
                   title={
@@ -206,7 +207,6 @@ const PostsList: React.FC = () => {
                     </Typography>
                   }
                   action={
-                    // מציג אייקון עריכה/מחיקה רק אם זה הפוסט של המשתמש
                     authUserId === post.owner && (
                       <>
                         <IconButton
@@ -241,7 +241,6 @@ const PostsList: React.FC = () => {
                 />
 
                 <CardContent>
-                  {/* במצב עריכה מציג טופס, אחרת טקסט רגיל */}
                   {editingPostId === post._id ? (
                     <>
                       <TextField
@@ -297,7 +296,6 @@ const PostsList: React.FC = () => {
                 </CardContent>
 
                 <CardActions disableSpacing>
-                  {/* כפתור לפתיחה/סגירת תגובות (לא יוצג במצב עריכה) */}
                   {editingPostId !== post._id && (
                     <ExpandMore
                       expand={expandedPostId === post._id}
@@ -315,19 +313,12 @@ const PostsList: React.FC = () => {
                   unmountOnExit
                 >
                   <CardContent>
-                    {/* אם לא בעריכת פוסט, מציגים את אזור התגובות */}
                     {editingPostId !== post._id && (
                       <Box
                         sx={{
-                          p: 2,
-                          bgcolor: "#f9f9f9",
                           borderRadius: 1,
-                          mt: 2,
                         }}
                       >
-                        <Typography variant="h6">Comments</Typography>
-
-                        {/** קומפוננטת התגובות */}
                         <CommentSection
                           post={post}
                           authUserId={authUserId || ""}
@@ -359,6 +350,7 @@ const PostsList: React.FC = () => {
         message="Post was deleted successfully"
       />
     </Container>
+    </Box>
   );
 };
 

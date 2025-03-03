@@ -1,8 +1,7 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, Divider, Stack, IconButton } from "@mui/material";
+import { Box, Typography, TextField, Button, Stack, IconButton, Menu, MenuItem, Snackbar } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
@@ -43,10 +42,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   const [newComment, setNewComment] = useState<string>("");
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editedContent, setEditedContent] = useState<string>("");
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedCommentId, setSelectedCommentId] = useState<string | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false);
 
-  /**
-   * הוספת תגובה חדשה
-   */
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
 
@@ -79,17 +78,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     }
   };
 
-  /**
-   * התחלת עריכת תגובה
-   */
   const handleStartEdit = (comment: Comment) => {
     setEditingCommentId(comment._id!);
     setEditedContent(comment.content);
+    setAnchorEl(null);
   };
 
-  /**
-   * עדכון תגובה
-   */
   const handleSaveEdit = async (commentId: string) => {
     if (!editedContent.trim()) return;
 
@@ -120,17 +114,11 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     }
   };
 
-  /**
-   * ביטול עריכת תגובה
-   */
   const handleCancelEdit = () => {
     setEditingCommentId(null);
     setEditedContent("");
   };
 
-  /**
-   * מחיקת תגובה
-   */
   const handleDeleteComment = async (commentId: string) => {
     if (!window.confirm("Are you sure you want to delete this comment?")) {
       return;
@@ -149,53 +137,85 @@ const CommentSection: React.FC<CommentSectionProps> = ({
 
       const updatedComments = post.comments.filter((c) => c._id !== commentId);
       onCommentsUpdated(updatedComments);
+      setSnackbarOpen(true);
     } catch (error) {
       console.error("Error deleting comment:", error);
     }
+  };
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>, commentId: string) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedCommentId(commentId);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedCommentId(null);
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   return (
     <Box sx={{ mt: 2 }}>
       {post.comments.length > 0 ? (
         post.comments.map((comment) => (
-          <Box key={comment._id} sx={{ mb: 2, p: 1, borderRadius: 1, border: "1px solid #ddd" }}>
-            <Divider sx={{ mb: 1 }} />
-            <Typography variant="subtitle2" color="text.primary">
-              {comment.username} ({comment.email}):
-            </Typography>
-
-            {editingCommentId === comment._id ? (
-              <Stack direction="row" spacing={1} alignItems="center">
-                <TextField
-                  fullWidth
-                  variant="outlined"
-                  size="small"
-                  value={editedContent}
-                  onChange={(e) => setEditedContent(e.target.value)}
-                />
-                <IconButton color="success" onClick={() => handleSaveEdit(comment._id!)}>
-                  <CheckIcon />
-                </IconButton>
-                <IconButton color="error" onClick={handleCancelEdit}>
-                  <CloseIcon />
-                </IconButton>
-              </Stack>
-            ) : (
-              <Typography variant="body2" color="text.secondary">
-                {comment.content}
-              </Typography>
-            )}
-
-            {comment.owner === authUserId && !editingCommentId && (
-              <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-                <IconButton color="primary" onClick={() => handleStartEdit(comment)}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton color="error" onClick={() => handleDeleteComment(comment._id!)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Stack>
-            )}
+          <Box key={comment._id} sx={{ mb: 2, p: 1, borderRadius: 1, border: "1px solid #F1EEEB" }}>
+            <Stack direction="row" spacing={1} >
+              <Box sx={{ flexGrow: 1 }}>
+                <Typography variant="inherit" color="text.primary" sx={{ fontWeight: 600, alignSelf: "flex-start" }}>
+                  {comment.username}:
+                </Typography>
+                {editingCommentId === comment._id ? (
+                  <Stack direction="row" spacing={1}>
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      size="small"
+                      value={editedContent}
+                      onChange={(e) => setEditedContent(e.target.value)}
+                    />
+                    <IconButton color="default" onClick={() => handleSaveEdit(comment._id!)}>
+                      <CheckIcon />
+                    </IconButton>
+                    <IconButton color="default" onClick={handleCancelEdit}>
+                      <CloseIcon />
+                    </IconButton>
+                  </Stack>
+                ) : (
+                  <Typography variant="inherit" color="text.secondary">
+                    {comment.content}
+                  </Typography>
+                )}
+              </Box>
+              {comment.owner === authUserId && !editingCommentId && (
+                <Box>
+                  <IconButton
+                    onClick={(event) => handleMenuClick(event, comment._id!)}
+                    size="small"
+                  >
+                    <MoreVertIcon fontSize="small" />
+                  </IconButton>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl) && selectedCommentId === comment._id}
+                    onClose={handleMenuClose}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <MenuItem onClick={() => handleStartEdit(comment)}>Edit</MenuItem>
+                    <MenuItem onClick={() => handleDeleteComment(comment._id!)}>Delete</MenuItem>
+                  </Menu>
+                </Box>
+              )}
+            </Stack>
           </Box>
         ))
       ) : (
@@ -223,6 +243,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           </Button>
         </Stack>
       </Box>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        message="Comment was deleted successfully"
+      />
     </Box>
   );
 };

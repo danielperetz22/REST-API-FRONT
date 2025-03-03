@@ -28,15 +28,15 @@ export const Header: React.FC = () => {
 
   return (
     <>
-      <AppBar sx={{ backgroundColor: "#fefbf5", boxShadow: "none" }}>
+      <AppBar sx={{ backgroundColor: "#d2cbc5", boxShadow: "none" }}>
         <Toolbar>
           <Box>
             <Typography
               component={Link}
               to="/"
               variant="overline"
-              fontSize={16}
-              sx={{ textDecoration: "none", color: "#eb341f", fontWeight: "bold", flexGrow: 1, marginLeft: 3 }}
+              fontSize={20}
+              sx={{ textDecoration: "none", color: "#352d2a", fontWeight: "bold", flexGrow: 1, marginLeft: 3 }}
             >
               HOME
             </Typography>
@@ -48,8 +48,8 @@ export const Header: React.FC = () => {
                   component={Link}
                   to="/posts"
                   variant="overline"
-                  fontSize={14}
-                  sx={{ textDecoration: "none", color: "#eb341f", flexGrow: 1, marginRight: 3 }}
+                  fontSize={16}
+                  sx={{ textDecoration: "none", color: "#352d2a", flexGrow: 1, marginRight: 3 }}
                 >
                   FEED
                 </Typography>
@@ -57,15 +57,15 @@ export const Header: React.FC = () => {
                   component={Link}
                   to="/profile"
                   variant="overline"
-                  fontSize={14}
-                  sx={{ textDecoration: "none", color: "#eb341f", flexGrow: 1, marginRight: 3 }}
+                  fontSize={16}
+                  sx={{ textDecoration: "none", color: "#352d2a", flexGrow: 1, marginRight: 3 }}
                 >
                   PROFILE
                 </Typography>
                 <Typography
                   variant="overline"
-                  fontSize={14}
-                  sx={{ textDecoration: "none", color: "#eb341f", cursor: "pointer", marginRight: 3 }}
+                  fontSize={16}
+                  sx={{ textDecoration: "none", color: "#352d2a", cursor: "pointer", marginRight: 3 }}
                   onClick={handleLogout}
                 >
                   LOGOUT
@@ -77,8 +77,8 @@ export const Header: React.FC = () => {
                   component={Link}
                   to="/register"
                   variant="overline"
-                  fontSize={14}
-                  sx={{ textDecoration: "none", color: "#eb341f", cursor: "pointer", marginRight: 3 }}
+                  fontSize={16}
+                  sx={{ textDecoration: "none", color: "#352d2a", cursor: "pointer", marginRight: 3 }}
                 >
                   GET STARTED
                 </Typography>
@@ -86,8 +86,8 @@ export const Header: React.FC = () => {
                   component={Link}
                   to="/login"
                   variant="overline"
-                  fontSize={14}
-                  sx={{ textDecoration: "none", color: "#eb341f", cursor: "pointer", marginRight: 3 }}
+                  fontSize={16}
+                  sx={{ textDecoration: "none", color: "#352d2a", cursor: "pointer", marginRight: 3 }}
                 >
                   LOGIN
                 </Typography>

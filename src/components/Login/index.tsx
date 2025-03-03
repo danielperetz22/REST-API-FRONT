@@ -91,10 +91,10 @@ const Login: React.FC = () => {
 
   return (
     <Grid container style={{ minHeight: "100vh", width: "100vw" }}>
-      <Grid item xs={12} md={5} sx={{ backgroundColor: "#fefbf5", display: "flex", flexDirection: "column", justifyContent: "center", padding: "2rem" }}>
+      <Grid item xs={12} md={5} sx={{ backgroundColor: "#d2cbc5", display: "flex", flexDirection: "column", justifyContent: "center", padding: "2rem" }}>
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", textAlign: "left", width: "100%", maxWidth: "400px", marginLeft: "100px" }}>
-          <Typography variant="h3" component="h3" fontWeight={900} color="#eb341f">Welcome Back</Typography>
-          <Typography variant="subtitle1" component="p" sx={{ marginTop: "1rem", color: "#eb341f" }}>Let's get you signed in</Typography>
+          <Typography variant="h3" component="h3" fontWeight={900} color="#352d2a">Welcome Back</Typography>
+          <Typography variant="subtitle1" component="p" sx={{ marginTop: "1rem", color: "#352d2a" }}>Let's get you signed in</Typography>
         </Box>
       </Grid>
 

@@ -97,8 +97,9 @@ const CreatePost = () => {
   };
 
   return (
-    <Container sx={{ mt: 16, mb: 4, height: "100vh", display: "flex", alignItems: "center" }}>
-      <Card sx={{ maxWidth: 500, mx: "auto", borderRadius: 2 }}>
+    <Box sx={{ backgroundColor: "#F7F5F2",height: "100%",width: "100%" }}>
+    <Container sx={{ mt: 12, mb: 4, height: "100vh", display: "flex", alignItems: "center" }}>
+      <Card sx={{ width: 550, mx: "auto", borderRadius: 2,p: 1 }}>
         <CardHeader
           avatar={<Avatar src={getCorrectImageUrl(userProfileImage)} />}
           title={
@@ -108,7 +109,7 @@ const CreatePost = () => {
           }
           subheader={userEmail}
         />
-        <Box sx={{ position: "relative", height: 350, backgroundColor: "#f0f0f0", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Box sx={{ position: "relative", height: 350, backgroundColor: "#F7F5F2", display: "flex", alignItems: "center", justifyContent: "center" }}>
           {imagePreview ? (
             <CardMedia
               component="img"
@@ -118,7 +119,7 @@ const CreatePost = () => {
               sx={{ objectFit: "cover" }}
             />
           ) : (
-            <Typography variant="body2" color="text.secondary">
+            <Typography variant="body2" color="text.secondary" fontSize={24}>
               No image selected
             </Typography>
           )}
@@ -175,7 +176,7 @@ const CreatePost = () => {
               type="submit"
               variant="contained"
               color="primary"
-              sx={{ minWidth: 150 }}
+              fullWidth
               disabled={loading}
               onClick={handleSubmit}
             >
@@ -195,6 +196,7 @@ const CreatePost = () => {
         </Alert>
       </Snackbar>
     </Container>
+    </Box>
   );
 };
 

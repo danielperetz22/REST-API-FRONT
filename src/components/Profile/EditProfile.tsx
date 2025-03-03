@@ -152,9 +152,9 @@ const EditProfilePage = () => {
     <Box
       sx={{
         width: "100vw",
+        height: "100vh",
         mt: 4,
-        mb: 4,
-        backgroundColor: "#fefbf5",
+        backgroundColor: "#F7F5F2",
         p: 4,
         pt: 12,
       }}
@@ -168,11 +168,11 @@ const EditProfilePage = () => {
           mx: "auto",
         }}
       >
-        <Box sx={{ width: 200, height: 200, position: "relative" }}>
+        <Box sx={{ width: 250, height: 250, position: "relative" }}>
           <Avatar
             src={previewImage || user.profileImage}
             alt="Profile Preview"
-            sx={{ width: 200, height: 200 }}
+            sx={{ width: 250, height: 250 }}
           />
           <IconButton
             color="default"
@@ -257,6 +257,7 @@ const EditProfilePage = () => {
               display: "flex",
               justifyContent: "space-between",
               width: "100%",
+              mt:"8%"
             }}
           >
             <Button
@@ -264,9 +265,6 @@ const EditProfilePage = () => {
               component={Link}
               to="/profile"
               sx={{
-                color: "#eb341f",
-                borderColor: "#eb341f",
-                textTransform: "none",
                 alignSelf: "flex-end",
               }}
             >
@@ -276,8 +274,8 @@ const EditProfilePage = () => {
               variant="contained"
               onClick={handleUpdateProfile}
               sx={{
-                backgroundColor: "#eb341f",
-                textTransform: "none",
+                backgroundColor: "#a6a29a",
+                color: "white",
                 alignSelf: "flex-start",
               }}
             >
