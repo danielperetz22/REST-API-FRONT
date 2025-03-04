@@ -20,11 +20,9 @@ export const handleGoogleResponse = async (
 
     console.log("Google Login/Register Success:", user);
 
-    // Save user details in local storage
     localStorage.setItem("userUsername", user.username);
     localStorage.setItem("userProfileImage", user.profileImage);
 
-    // Pass all details to login function
     login(refreshToken, user._id, user.email, user.username, user.profileImage);
 
     alert(`Welcome, ${user.username}!`);

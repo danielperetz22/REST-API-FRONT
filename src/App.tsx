@@ -26,7 +26,6 @@ function App() {
       <Router>
         <div>
           <div className="HeaderContainer">
-            {/* login logout func Header */}
             <Header />
           </div>
           <div className="HomePageContainer">
