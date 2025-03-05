@@ -61,7 +61,7 @@ export const HeroSection2 = () => {
                             <CardMedia
                                 component="img"
                                 height="350"
-                                image="https://i.pinimg.com/736x/0a/79/dd/0a79dd7d98d41d8142fb2a91a62cce4a.jpg"
+                                image="/src/assets/harry_potter.png"
                                 alt="Harry Potter and the Chamber of Secrets"
                                 sx={{ objectFit: "cover" }}
                             />
@@ -89,7 +89,7 @@ export const HeroSection2 = () => {
                             <CardMedia
                                 component="img"
                                 height="350"
-                                image="https://i.pinimg.com/736x/ec/c0/c7/ecc0c768e143e14057a5ef33bcada045.jpg"
+                                image="/src/assets/The_stranger.png"
                                 alt="The Stranger"
                                 sx={{ objectFit: "cover" }}
                             />
