@@ -1,8 +1,9 @@
 import { Box, Avatar, TextField, Button, Typography } from "@mui/material";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getCorrectImageUrl } from "../../until/imageProfile";
+import { apiClient } from "../../services/api_client";
+
 
 const ProfileDetails = () => {
   interface UserProfile {
@@ -24,9 +25,8 @@ const ProfileDetails = () => {
           return;
         }
 
-        const response = await axios.get("http://localhost:3000/auth/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await apiClient.get("/auth/profile");
+
 
         console.log("Fetched user:", response.data);
         setUser(response.data);

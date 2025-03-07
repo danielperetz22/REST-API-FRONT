@@ -22,12 +22,13 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import axios from "axios";
 import { styled } from "@mui/material/styles";
 import CommentSection from "..//AllPosts/CommentSection";
 import { useAuth } from "../../context/AuthContext";
 import { getCorrectImageUrl } from "../../until/imageProfile";
 import postService from "../../services/post_service"; 
+import { apiClient } from "../../services/api_client";
+
 
 const ExpandMore = styled(IconButton, {
   shouldForwardProp: (prop) => prop !== "expand", 
@@ -76,22 +77,31 @@ const UserPosts: React.FC = () => {
   const { userId: authUserId, userEmail: authUserEmail, userUsername: authUserUsername } = useAuth();
 
   useEffect(() => {
+    console.log("🔍 Fetching user posts...");
+    console.log("👤 Current authUserId:", authUserId); // האם userId תקין?
+  
     const fetchUserPosts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/post/all");
+        const response = await apiClient.get("/post/all");
+        console.log("📩 All posts from API:", response.data);
+  
         const allPosts: Post[] = response.data;
-        const userPosts = allPosts.filter((post) => post.owner === authUserId);
+        const userPosts = allPosts.filter((post) => post.owner.toString() === authUserId);
         
+        console.log("✅ User posts after filtering:", userPosts);
         setPosts(userPosts);
       } catch (err) {
-        console.error("Error fetching posts:", err);
+        console.error("❌ Error fetching posts:", err);
         setError("Failed to fetch posts.");
       } finally {
         setIsLoading(false);
       }
     };
+  
     fetchUserPosts();
   }, [authUserId]);
+  
+  
 
   const handleExpandClick = (postId: string) => {
     setExpandedPostId(prev => (prev === postId ? null : postId));
@@ -99,18 +109,17 @@ const UserPosts: React.FC = () => {
 
   const handleDelete = async (postId: string) => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:3000/post/posts/${postId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
+      await apiClient.delete(`/post/${postId}`); 
+  
       setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
       handleMenuClose();
       setSnackbarOpen(true);
     } catch (err) {
-      console.error("Error deleting post:", err);
+      console.error("❌ Error deleting post:", err);
+      setError("Failed to delete post.");
     }
   };
+  
 
   const handleEditClick = (post: Post) => {
     setEditingPostId(post._id);
@@ -127,25 +136,22 @@ const UserPosts: React.FC = () => {
 
   const handleSaveEdit = async (postId: string) => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:3000/post/${postId}`,
-        { title: editTitle, content: editContent },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
+      const response = await apiClient.put(`/post/${postId}`, { title: editTitle, content: editContent });
+  
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post._id === postId
-            ? { ...post, title: editTitle, content: editContent }
+            ? { ...post, title: response.data.title, content: response.data.content }
             : post
         )
       );
       setEditingPostId(null);
     } catch (err) {
-      console.error("Error updating post:", err);
+      console.error("❌ Error updating post:", err);
+      setError("Failed to update post.");
     }
   };
+  
 
   const handleMenuClick = (
     event: React.MouseEvent<HTMLElement>,
@@ -198,7 +204,7 @@ const UserPosts: React.FC = () => {
         </Alert>
       )}
 
-      {posts.length === 0 ? (
+        {posts.length === 0 ? (
         <Typography>No posts available.</Typography>
       ) : (
         <Grid container spacing={5} justifyContent="center">
@@ -246,13 +252,12 @@ const UserPosts: React.FC = () => {
                     )
                   }
                 />
-
                 <CardMedia
-                  component="img"
-                  height="350"
-                  image={`http://localhost:3000/${post.image}`}
-                  alt={post.title}
-                  sx={{ objectFit: "cover" }}
+                component="img"
+                height="350"
+                image={post.image.startsWith("http") ? post.image : getCorrectImageUrl(post.image)}
+                alt={post.title}
+                sx={{ objectFit: "cover" }}
                 />
 
                 <CardContent>

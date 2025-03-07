@@ -1,9 +1,9 @@
 import { Box, Button, CircularProgress, Divider, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import ProfileDetails from "./ProfileDetails"; 
 import ProfilePost from "./ProfilePosts";
 import AddIcon from '@mui/icons-material/Add';
+import { apiClient } from "../../services/api_client";
 
 const ProfilePage = () => {
   const [user, setUser] = useState(null);
@@ -14,9 +14,7 @@ const ProfilePage = () => {
     const fetchUserProfile = async () => {
       try {
         if (!token) throw new Error("No token found!");
-        const response = await axios.get("http://localhost:3000/auth/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await apiClient.get("/auth/profile");
         setUser(response.data);
       } catch (error) {
         console.error("Error fetching profile:", error);

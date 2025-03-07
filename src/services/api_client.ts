@@ -1,10 +1,16 @@
 import axios ,{CanceledError }from "axios";
 
 export { CanceledError };
-
-const apiClient = axios.create({
-  baseURL: import.meta.env.BACK_API_URL || "http://localhost:3000",
+const backend_url = import.meta.env.VITE_BACKEND_URL|| "https://10.10.246.24";
+export const apiClient = axios.create({
+  baseURL: backend_url,
 });
-
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 export default apiClient;

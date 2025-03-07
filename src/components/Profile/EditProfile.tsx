@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import {
   TextField,
   Button,
@@ -10,6 +9,7 @@ import {
   Alert,
 } from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
+import { apiClient } from "../../services/api_client";
 
 const EditProfilePage = () => {
   const navigate = useNavigate();
@@ -39,11 +39,7 @@ const EditProfilePage = () => {
           console.error("No token found!");
           return;
         }
-
-        const response = await axios.get("http://localhost:3000/auth/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
+        const response = await apiClient.get("/auth/profile");
         setUser(response.data);
         setNewUsername(response.data.username);
         setNewEmail(response.data.email);
@@ -59,7 +55,6 @@ const EditProfilePage = () => {
         console.error("Error fetching profile:", error);
       }
     };
-
     fetchUserProfile();
   }, [token]);
 
@@ -104,26 +99,17 @@ const EditProfilePage = () => {
         formData.append("confirmNewPassword", confirmNewPassword);
       }
 
-      for (const [key, value] of formData.entries()) {
-        console.log(key, value instanceof File ? value.name : value);
-      }
-
-      const response = await axios.put(
-        "http://localhost:3000/auth/profile",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      console.log("🔄 Sending update profile request...");
+      const response = await apiClient.put("/auth/profile", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
       if (response.data.user) {
+        console.log("✅ Profile (and posts) updated:", response.data);
         const updatedUser = response.data.user;
 
+        // שמירת ערכי המשתמש החדשים ב-localStorage
         localStorage.clear();
-
         localStorage.setItem("token", token);
         localStorage.setItem("userId", updatedUser._id);
         localStorage.setItem("userEmail", updatedUser.email);
@@ -131,15 +117,12 @@ const EditProfilePage = () => {
         localStorage.setItem("userUsername", updatedUser.username);
         localStorage.setItem("visitCount", "1");
 
-        setSuccess("Profile updated successfully!");
+        setSuccess("Profile updated successfully! (Posts also updated!)");
         setPreviewImage(updatedUser.profileImage);
         navigate("/profile");
       }
-    } catch (error) {
-      const errorMessage =
-        axios.isAxiosError(error) && error.response?.data?.message
-          ? error.response.data.message
-          : "Error updating profile";
+    } catch (error: any) {
+      const errorMessage = error.response?.data?.message || "Error updating profile";
       setError(errorMessage);
       console.error("Update error:", error);
     }
@@ -254,7 +237,7 @@ const EditProfilePage = () => {
               display: "flex",
               justifyContent: "space-between",
               width: "100%",
-              mt:"8%"
+              mt: "8%",
             }}
           >
             <Button

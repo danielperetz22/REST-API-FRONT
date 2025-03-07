@@ -1,4 +1,5 @@
-import axios from "axios";
+import { apiClient } from "../services/api_client";
+
 
 export const handleGoogleResponse = async (
   credential: string,
@@ -7,7 +8,8 @@ export const handleGoogleResponse = async (
   login: (refreshToken: string, userId: string, userEmail: string, userUsername: string, userProfileImage: string) => void // Added username & profileImage
 ) => {
   try {
-    const response = await axios.post("http://localhost:3000/auth/google", {
+    const response = await apiClient.post("/auth/google", {
+
       token: credential,
     });
 

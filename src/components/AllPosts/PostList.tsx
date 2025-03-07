@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { apiClient } from "../../services/api_client";
 import {
   Container,
   Grid,
   Card,
   CardHeader,
-  CardMedia,
   CardContent,
   CardActions,
   Collapse,
@@ -19,10 +19,10 @@ import {
   TextField,
   Snackbar,
   Button,
+  CardMedia,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import axios from "axios";
 import { styled } from "@mui/material/styles";
 import CommentSection from "./CommentSection";
 import { useAuth } from "../../context/AuthContext";
@@ -76,7 +76,7 @@ const PostsList: React.FC = () => {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-
+  
   const {
     userId: authUserId,
     userEmail: authUserEmail,
@@ -86,8 +86,14 @@ const PostsList: React.FC = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/post/all");
+        const response = await apiClient.get("/post/all");
+        console.log("Fetched posts:", response.data);
+        response.data.forEach((post: Post) => {
+          console.log("🌍 Image URL from backend:", post.image);
+        });
         setPosts(response.data);
+    
+
       } catch (err) {
         console.error("Error fetching posts:", err);
         setError("Failed to fetch posts.");
@@ -129,8 +135,7 @@ const PostsList: React.FC = () => {
   const handleSaveEdit = async (postId: string) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(
-        `http://localhost:3000/post/${postId}`,
+      await apiClient.put("/post/${postId}",
         { title: editTitle, content: editContent },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -157,7 +162,7 @@ const PostsList: React.FC = () => {
   const handleDelete = async (postId: string) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`http://localhost:3000/post/posts/${postId}`, {
+      await apiClient.delete("/post/posts/${postId}", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -204,29 +209,25 @@ const PostsList: React.FC = () => {
           </Alert>
         )}
 
-        {posts.length === 0 ? (
+          {posts.length === 0 ? (
           <Typography>No posts available.</Typography>
         ) : (
           <Grid container spacing={5} justifyContent="center">
             {posts.map((post) => (
               <Grid item xs={12} sm={8} md={6} lg={6} key={post._id}>
                 <Card sx={{ maxWidth: 700, mx: "auto", borderRadius: 2 }}>
-                  <CardHeader
-                    avatar={<Avatar src={getCorrectImageUrl(post.userProfileImage)} />}
-                    title={
-                      <Typography
-                        variant="h6"
-                        color="text.primary"
-                        sx={{ fontWeight: "bold" }}
-                      >
-                        {post.username}
-                      </Typography>
-                    }
-                    subheader={
-                      <Typography variant="body2" color="text.secondary">
-                        {post.email}
-                      </Typography>
-                    }
+                     <CardHeader
+                       avatar={<Avatar src={getCorrectImageUrl(post.userProfileImage)} />}
+                       title={
+                         <Typography variant="h6" color="text.primary" sx={{ fontWeight: "bold" }}>
+                            {post.username}
+                          </Typography>
+                       }
+                       subheader={
+                         <Typography variant="body2" color="text.secondary">
+                           {post.email}
+                         </Typography>
+                       }
                     action={
                       authUserId === post.owner && (
                         <>
@@ -251,16 +252,14 @@ const PostsList: React.FC = () => {
                         </>
                       )
                     }
-                  />
-
-                  <CardMedia
+                    />
+                    <CardMedia
                     component="img"
                     height="350"
-                    image={`http://localhost:3000/${post.image}`}
+                    image={getCorrectImageUrl(post.image)}
                     alt={post.title}
                     sx={{ objectFit: "cover" }}
                   />
-
                   <CardContent>
                     {editingPostId === post._id ? (
                       <>

@@ -15,9 +15,8 @@ import SendIcon from "@mui/icons-material/Send";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-import axios from "axios";
 import postService from "../../services/post_service"; 
-
+import { apiClient } from "../../services/api_client";
 interface Comment {
   _id?: string;
   content: string;
@@ -69,19 +68,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         return;
       }
 
-      const response = await axios.post(
-        "http://localhost:3000/comment",
-        {
-          content: newComment,
-          postId: post._id,
-          owner: authUserId,
-          email: authUserEmail,
-          username: authUserUsername,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await apiClient.post("/comment", {
+        content: newComment,
+        postId: post._id,
+        owner: authUserId,
+        email: authUserEmail,
+        username: authUserUsername,
+      });
+      
 
       const createdComment: Comment = response.data.newComment;
       setNewComment("");
@@ -122,34 +116,34 @@ const CommentSection: React.FC<CommentSectionProps> = ({
 
   const handleSaveEdit = async (commentId: string) => {
     if (!editedContent.trim()) return;
-
+  
     try {
       const token = localStorage.getItem("token");
       if (!token) {
         console.error("No authentication token found!");
         return;
       }
-
-      const response = await axios.put(
-        `http://localhost:3000/comment/${commentId}`,
-        { comment: editedContent },
+  
+      const response = await apiClient.put(
+        `/comment/${commentId}`,
+        { content: editedContent }, 
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
-      const updatedComment: Comment = response.data.comment;
+  
+      const updatedComment: Comment = response.data;
       const updatedComments = post.comments.map((c) =>
         c._id === updatedComment._id ? updatedComment : c
       );
-
+  
       onCommentsUpdated(updatedComments);
       setEditingCommentId(null);
     } catch (error) {
-      console.error("Error updating comment:", error);
+      console.error("❌ Error updating comment:", error);
     }
   };
-
+  
   const handleCancelEdit = () => {
     setEditingCommentId(null);
     setEditedContent("");
@@ -159,15 +153,15 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     if (!window.confirm("Are you sure you want to delete this comment?")) {
       return;
     }
-
+  
     try {
       const token = localStorage.getItem("token");
       if (!token) {
         console.error("No authentication token found!");
         return;
       }
-
-      await axios.delete(`http://localhost:3000/comment/${commentId}`, {
+  
+      await apiClient.delete(`/comment/${commentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -175,9 +169,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       onCommentsUpdated(updatedComments);
       setSnackbarOpen(true);
     } catch (error) {
-      console.error("Error deleting comment:", error);
+      console.error("❌ Error deleting comment:", error);
     }
   };
+  
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>, commentId: string) => {
     setAnchorEl(event.currentTarget);
@@ -222,7 +217,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           {error}
         </Typography>
       )}
-      {post.comments.length > 0 ? (
+       {post.comments.length > 0 ? (
         post.comments.map((comment) => (
           <Box
             key={comment._id}

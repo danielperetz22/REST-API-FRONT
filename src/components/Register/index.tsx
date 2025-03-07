@@ -15,6 +15,7 @@ import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternate
 import axios from "axios";
 import { handleGoogleResponse } from "../../hook/googleAuth";
 import { useAuth } from "../../context/AuthContext";
+import { apiClient } from "../../services/api_client";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -82,17 +83,14 @@ const Register: React.FC = () => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/auth/register",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const response = await apiClient.post("/auth/register", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       const data = response.data;
-      console.log("Registration Success:", response.data);
+      console.log("Registration Success:", data);
+      
       <Alert severity="success">User registered successfully!</Alert>;
       login(
         data.refreshToken,

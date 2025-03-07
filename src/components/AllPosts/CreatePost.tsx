@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import axios from "axios";
 import postService from "../../services/post_service"; 
 import {
   Container,
@@ -20,6 +19,7 @@ import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternate
 import { useAuth } from "../../context/AuthContext";
 import { getCorrectImageUrl } from "../../until/imageProfile";
 import { useNavigate } from "react-router-dom";
+import { apiClient } from "../../services/api_client";
 
 const CreatePost = () => {
   const [title, setTitle] = useState("");
@@ -79,14 +79,12 @@ const CreatePost = () => {
 
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      //const token = localStorage.getItem("token");
 
-      const response = await axios.post("http://localhost:3000/post", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await apiClient.post("/post", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
+      
 
       console.log("Post created successfully:", response.data);
 
@@ -99,13 +97,14 @@ const CreatePost = () => {
       setTimeout(() => {
         navigate("/profile");
       }, 3000);
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Failed to create post.");
-        console.error("Create post error:", err.response?.data || err.message);
+    } catch (err: any) {
+      if (err.response) {
+        setError(err.response.data?.message || "Failed to create post.");
+        console.error("Create post error:", err.response.data || err.message);
       } else {
         setError("Failed to create post.");
       }
+      
     } finally {
       setLoading(false);
     }

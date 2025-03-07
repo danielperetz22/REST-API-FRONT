@@ -1,12 +1,16 @@
-import axios from 'axios';
+import axios ,{CanceledError }from "axios";
 
-const axiosInstance = axios.create({
-  baseURL: "http://localhost:3000", 
-  headers: {
-    "Content-Type": "application/json",
-  },
+export { CanceledError };
+const backend_url = import.meta.env.VITE_BACKEND_URL;
+export const apiClient = axios.create({
+  baseURL: backend_url,
+});
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
 });
 
-export default axiosInstance;
-
-
+export default apiClient;
