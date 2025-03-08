@@ -28,7 +28,7 @@ const Register: React.FC = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const navigate = useNavigate();
   const { login } = useAuth();
-  const defaultImage = "/src/assets/profile-default.jpg";
+  //const defaultImage = "/src/assets/profile-default.jpg";
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -41,65 +41,49 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
+  
     if (!email || !verifyEmail || !password || !username) {
       setError("All fields are required.");
       return;
     }
-
+  
     if (email !== verifyEmail) {
       setError("Emails do not match.");
       return;
     }
-
+  
     const formData = new FormData();
     formData.append("email", email);
     formData.append("username", username);
     formData.append("password", password);
     if (profileImage) {
       formData.append("profileImage", profileImage);
-    } else {
-      const response = await fetch(defaultImage);
-      const blob = await response.blob();
-      formData.append(
-        "profileImage",
-        new File([blob], "profile-default.jpg", { type: "image/jpeg" })
-      );
     }
-
-    if (username.length < 2) {
-      setError("Username must be at least 2 characters.");
-      return;
-    }
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
+  
     try {
       const response = await apiClient.post("/auth/register", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
+  
       const data = response.data;
-      console.log("Registration Success:", data);
-      
-      <Alert severity="success">User registered successfully!</Alert>;
+      console.log("🔍 Registration Data from Server:", data);
+  
+      if (!data.refreshToken || !data.accessToken || !data.user?._id || !data.user?.email || !data.user?.username || !data.user?.profileImage) {
+        console.error("❌ Registration failed. Missing credentials:", data);
+        setError("Registration failed. Missing credentials.");
+        return;
+      }
+  
+      console.log("✅ Registration Success:", data);
       login(
         data.refreshToken,
-        data._id,
-        data.email,
-        data.username,
-        data.profileImage
+        data.user._id,
+        data.user.email,
+        data.user.username,
+        data.user.profileImage
       );
       navigate("/posts");
+  
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         if (err.response) {
@@ -121,7 +105,9 @@ const Register: React.FC = () => {
       }
     }
   };
+  
 
+  
   const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
     if (credentialResponse.credential) {
       handleGoogleResponse(

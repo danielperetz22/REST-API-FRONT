@@ -1,5 +1,9 @@
 import { Box, Typography, Stack, Card, CardHeader, CardMedia, CardContent, Avatar, IconButton, Grid } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import BODO from "../../assets/BODO.jpg"
+import JHONNY from "../../assets/JHONNY.jpg"
+import Harry_Potter from "../../assets/harry_potter.png"
+import The_Srtanger from "../../assets/The_stranger.png"
 
 export const HeroSection2 = () => {
     return (
@@ -52,7 +56,7 @@ export const HeroSection2 = () => {
                     <Grid item xs={12} sm={8} md={6} lg={5}>
                         <Card sx={{ maxWidth: 700, mx: "auto", borderRadius: 2 }}>
                             <CardHeader
-                                avatar={<Avatar src="/src/assets/BODO.jpg" />}
+                                avatar={<Avatar src={BODO} />}
 
                                 title={<Typography sx={{ fontWeight: "bold" }}>Bodo</Typography>}
                                 subheader="bodo@example.com"
@@ -61,7 +65,7 @@ export const HeroSection2 = () => {
                             <CardMedia
                                 component="img"
                                 height="350"
-                                image="https://i.pinimg.com/736x/0a/79/dd/0a79dd7d98d41d8142fb2a91a62cce4a.jpg"
+                                image={Harry_Potter}
                                 alt="Harry Potter and the Chamber of Secrets"
                                 sx={{ objectFit: "cover" }}
                             />
@@ -81,7 +85,7 @@ export const HeroSection2 = () => {
                     <Grid item xs={12} sm={8} md={6} lg={5}>
                         <Card sx={{ maxWidth: 700, mx: "auto", borderRadius: 2 }}>
                             <CardHeader
-                                avatar={<Avatar src="/src/assets/JHONNY.jpg" />}
+                                avatar={<Avatar src={JHONNY} />                            }
                                 title={<Typography sx={{ fontWeight: "bold" }}>Jhonny</Typography>}
                                 subheader="jhonny@example.com"
                                 action={<IconButton aria-label="settings"><MoreVertIcon /></IconButton>}
@@ -89,7 +93,7 @@ export const HeroSection2 = () => {
                             <CardMedia
                                 component="img"
                                 height="350"
-                                image="https://i.pinimg.com/736x/ec/c0/c7/ecc0c768e143e14057a5ef33bcada045.jpg"
+                                image={The_Srtanger}
                                 alt="The Stranger"
                                 sx={{ objectFit: "cover" }}
                             />

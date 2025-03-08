@@ -108,9 +108,21 @@ const UserPosts: React.FC = () => {
   };
 
   const handleDelete = async (postId: string) => {
+    if (!window.confirm("Are you sure you want to delete this post?")) {
+      return;
+    }
+
     try {
-      await apiClient.delete(`/post/${postId}`); 
-  
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("❌ No authentication token found!");
+        return;
+      }
+
+      await apiClient.delete(`/post/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
       handleMenuClose();
       setSnackbarOpen(true);
@@ -119,6 +131,7 @@ const UserPosts: React.FC = () => {
       setError("Failed to delete post.");
     }
   };
+
   
 
   const handleEditClick = (post: Post) => {
@@ -135,9 +148,27 @@ const UserPosts: React.FC = () => {
   };
 
   const handleSaveEdit = async (postId: string) => {
+    if (!editTitle.trim() || !editContent.trim()) {
+      setError("Please fill out both title and content.");
+      return;
+    }
+
     try {
-      const response = await apiClient.put(`/post/${postId}`, { title: editTitle, content: editContent });
-  
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("❌ No authentication token found!");
+        return;
+      }
+
+      console.log("📝 Sending data to API:", { title: editTitle, content: editContent });
+
+      const response = await apiClient.put(`/post/${postId}`, 
+        { title: editTitle, content: editContent }, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      console.log("✅ Post updated:", response.data);
+
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post._id === postId
@@ -151,6 +182,7 @@ const UserPosts: React.FC = () => {
       setError("Failed to update post.");
     }
   };
+
   
 
   const handleMenuClick = (

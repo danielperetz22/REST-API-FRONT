@@ -115,34 +115,44 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   };
 
   const handleSaveEdit = async (commentId: string) => {
-    if (!editedContent.trim()) return;
-  
+    if (!editedContent.trim()) {
+      setError("Please write something in the comment before saving.");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("No authentication token found!");
+        console.error("❌ No authentication token found!");
         return;
       }
-  
-      const response = await apiClient.put(
+      console.log("🔎 Token שנשלח:", token);
+      console.log("🔎 commentId:", commentId);
+      console.log("🔎 URL שנשלח:", `/comment/${commentId}`);
+      const response =await apiClient.put(
         `/comment/${commentId}`,
-        { content: editedContent }, 
+        { comment: editedContent },
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-  
+      
+      console.log("✅ Updated comment data:", response.data);
+
       const updatedComment: Comment = response.data;
       const updatedComments = post.comments.map((c) =>
         c._id === updatedComment._id ? updatedComment : c
       );
-  
-      onCommentsUpdated(updatedComments);
+
+      onCommentsUpdated(updatedComments); 
       setEditingCommentId(null);
     } catch (error) {
       console.error("❌ Error updating comment:", error);
+
+      setError("Failed to update comment. Please try again.");
     }
   };
+
   
   const handleCancelEdit = () => {
     setEditingCommentId(null);
@@ -153,26 +163,27 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     if (!window.confirm("Are you sure you want to delete this comment?")) {
       return;
     }
-  
+
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("No authentication token found!");
+        console.error("❌ No authentication token found!");
         return;
       }
-  
+
       await apiClient.delete(`/comment/${commentId}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }, 
       });
 
       const updatedComments = post.comments.filter((c) => c._id !== commentId);
-      onCommentsUpdated(updatedComments);
+      onCommentsUpdated(updatedComments); 
       setSnackbarOpen(true);
     } catch (error) {
       console.error("❌ Error deleting comment:", error);
+
+      setError("Failed to delete comment. Please try again.");
     }
   };
-  
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>, commentId: string) => {
     setAnchorEl(event.currentTarget);
