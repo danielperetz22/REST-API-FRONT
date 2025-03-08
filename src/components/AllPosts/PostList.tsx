@@ -88,9 +88,6 @@ const PostsList: React.FC = () => {
       try {
         const response = await apiClient.get("/post/all");
         console.log("Fetched posts:", response.data);
-        response.data.forEach((post: Post) => {
-          console.log("🌍 Image URL from backend:", post.image);
-        });
         setPosts(response.data);
     
 
@@ -135,23 +132,27 @@ const PostsList: React.FC = () => {
   const handleSaveEdit = async (postId: string) => {
     try {
       const token = localStorage.getItem("token");
-      await apiClient.put("/post/${postId}",
+      const response = await apiClient.put(`/post/${postId}`,
         { title: editTitle, content: editContent },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+  
+      const updatedPost = response.data; 
+  
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
           post._id === postId
-            ? { ...post, title: editTitle, content: editContent }
+            ? { ...post, ...updatedPost } 
             : post
         )
       );
       setEditingPostId(null);
     } catch (err) {
-      console.error("Error updating post:", err);
+      console.error("❌ Error updating post:", err);
+      setError("Failed to update post. Please try again.");
     }
   };
+  
 
   const handleCancelEdit = () => {
     setEditingPostId(null);
@@ -162,17 +163,18 @@ const PostsList: React.FC = () => {
   const handleDelete = async (postId: string) => {
     try {
       const token = localStorage.getItem("token");
-      await apiClient.delete("/post/posts/${postId}", {
+      await apiClient.delete(`/post/${postId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
+  
       setPosts((prevPosts) => prevPosts.filter((post) => post._id !== postId));
       handleMenuClose();
       setSnackbarOpen(true);
     } catch (err) {
-      console.error("Error deleting post:", err);
+      console.error("❌ Error deleting post:", err);
     }
   };
+  
 
   const handleGenerateAIEdit = async () => {
     if (!editTitle) {

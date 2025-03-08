@@ -126,34 +126,34 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         console.error("❌ No authentication token found!");
         return;
       }
-      console.log("🔎 Token שנשלח:", token);
-      console.log("🔎 commentId:", commentId);
-      console.log("🔎 URL שנשלח:", `/comment/${commentId}`);
-      const response =await apiClient.put(
+
+      const response = await apiClient.put(
         `/comment/${commentId}`,
-        { comment: editedContent },
+        { comment: editedContent }, 
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      
-      console.log("✅ Updated comment data:", response.data);
 
-      const updatedComment: Comment = response.data;
+      const updatedComment: Comment = response.data.comment; // 👈 שים לב שזה תואם למבנה התגובה מהשרת
+
+      // עדכון רשימת התגובות עם התגובה המעודכנת
       const updatedComments = post.comments.map((c) =>
         c._id === updatedComment._id ? updatedComment : c
       );
 
-      onCommentsUpdated(updatedComments); 
+      onCommentsUpdated(updatedComments); // 👈 עדכון מיידי של הנתונים
+
       setEditingCommentId(null);
     } catch (error) {
       console.error("❌ Error updating comment:", error);
-
       setError("Failed to update comment. Please try again.");
     }
-  };
+};
+
 
   
+
   const handleCancelEdit = () => {
     setEditingCommentId(null);
     setEditedContent("");

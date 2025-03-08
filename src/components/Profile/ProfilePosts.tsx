@@ -163,10 +163,10 @@ const UserPosts: React.FC = () => {
       console.log("📝 Sending data to API:", { title: editTitle, content: editContent });
 
       const response = await apiClient.put(`/post/${postId}`, 
-        { title: editTitle, content: editContent }, 
+        { title: editTitle, content: editContent },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
+      
       console.log("✅ Post updated:", response.data);
 
       setPosts((prevPosts) =>

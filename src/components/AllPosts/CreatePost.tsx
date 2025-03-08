@@ -219,7 +219,7 @@ const CreatePost = () => {
               autoHideDuration={6000}
               onClose={handleSnackbarClose}
               anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-              message="Post  deleted successfully"
+              message="Post  created successfully"
             />
     </Container>
     </Box>

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "pm2": "pm2 restart REST-API-BACKEND --update-env",
     "build": "tsc -b && vite build && cp -r ./dist/* ../REST-API-BACKEND/front",
     "lint": "eslint .",
     "preview": "vite preview"

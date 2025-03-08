@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import {
@@ -16,6 +16,7 @@ import axios from "axios";
 import { handleGoogleResponse } from "../../hook/googleAuth";
 import { useAuth } from "../../context/AuthContext";
 import { apiClient } from "../../services/api_client";
+import defaultImage from "../../assets/profile-default.jpg";
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -27,8 +28,15 @@ const Register: React.FC = () => {
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { login } = useAuth();
-  //const defaultImage = "/src/assets/profile-default.jpg";
+  const { login, isAuthenticated } = useAuth();
+
+  // Use effect to navigate when the user becomes authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("User is authenticated, navigating to /posts");
+      navigate("/posts");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -41,40 +49,57 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-  
+
     if (!email || !verifyEmail || !password || !username) {
       setError("All fields are required.");
       return;
     }
-  
+
     if (email !== verifyEmail) {
       setError("Emails do not match.");
       return;
     }
-  
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("email", email);
     formData.append("username", username);
     formData.append("password", password);
     if (profileImage) {
       formData.append("profileImage", profileImage);
+    } else {
+      // Append the default image path; note: your backend must support reading the default image correctly
+      formData.append("profileImage", "/src/assets/profile-default.jpg");
     }
-  
+
     try {
       const response = await apiClient.post("/auth/register", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-  
+
       const data = response.data;
       console.log("🔍 Registration Data from Server:", data);
-  
-      if (!data.refreshToken || !data.accessToken || !data.user?._id || !data.user?.email || !data.user?.username || !data.user?.profileImage) {
+
+      if (
+        !data.refreshToken ||
+        !data.accessToken ||
+        !data.user?._id ||
+        !data.user?.email ||
+        !data.user?.username ||
+        !data.user?.profileImage
+      ) {
         console.error("❌ Registration failed. Missing credentials:", data);
         setError("Registration failed. Missing credentials.");
         return;
       }
-  
+
       console.log("✅ Registration Success:", data);
+
+      // Call login to update auth context and localStorage.
       login(
         data.refreshToken,
         data.user._id,
@@ -82,8 +107,8 @@ const Register: React.FC = () => {
         data.user.username,
         data.user.profileImage
       );
-      navigate("/posts");
-  
+
+      // We no longer call navigate here because our useEffect will handle it once isAuthenticated becomes true.
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         if (err.response) {
@@ -105,9 +130,7 @@ const Register: React.FC = () => {
       }
     }
   };
-  
 
-  
   const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
     if (credentialResponse.credential) {
       handleGoogleResponse(
@@ -160,7 +183,7 @@ const Register: React.FC = () => {
           <Typography
             variant="subtitle1"
             component="p"
-            fontFamily= "Dancing Script"
+            fontFamily="Dancing Script"
             sx={{ marginTop: "1rem", color: "#352d2a", fontSize: "1.5rem" }}
           >
             Here for the first time? Let's get you settled in
@@ -212,14 +235,14 @@ const Register: React.FC = () => {
                 <Box sx={{ position: "relative", display: "inline-block" }}>
                   {previewImage ? (
                     <Avatar
-                      src={previewImage}
+                      src={previewImage || defaultImage}
                       alt="Profile Preview"
                       sx={{ width: 150, height: 150 }}
                     />
                   ) : (
                     <Avatar
                       alt="Default Profile"
-                      src="/src/assets/profile-default.jpg"
+                      src={defaultImage}
                       sx={{ width: 150, height: 150 }}
                     />
                   )}

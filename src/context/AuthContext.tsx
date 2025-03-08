@@ -31,7 +31,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [userProfileImage, setUserProfileImage] = useState<string | null>(localStorage.getItem("userProfileImage"));
   const [userUsername, setUserUsername] = useState<string | null>(localStorage.getItem("userUsername"));
 
-  // 📌 מאזין לשינויים ב-localStorage ומעדכן את ה-state
   useEffect(() => {
     const handleStorageChange = () => {
       setToken(localStorage.getItem("token"));
@@ -76,7 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         userUsername,
       });
 
-      window.location.reload(); // כדי לוודא שכל הערכים החדשים נטענים נכון
+      window.location.reload(); 
     } catch (error) {
       console.error("❌ Failed to login:", error);
     }

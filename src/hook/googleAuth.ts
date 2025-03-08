@@ -5,7 +5,7 @@ export const handleGoogleResponse = async (
   credential: string,
   navigate: (path: string) => void,
   setError: (msg: string | null) => void,
-  login: (refreshToken: string, userId: string, userEmail: string, userUsername: string, userProfileImage: string) => void // Added username & profileImage
+  login: (refreshToken: string, userId: string, userEmail: string, userUsername: string, userProfileImage: string) => void 
 ) => {
   try {
     const response = await apiClient.post("/auth/google", {
