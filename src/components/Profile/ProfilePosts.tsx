@@ -286,9 +286,13 @@ const UserPosts: React.FC = () => {
                     ) : (
                       <>
                         <Typography variant="subtitle2" sx={{ fontWeight: "bold", fontSize: "1.1rem" }}>{post.title}</Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {post.content.length > 200 ? `${post.content.substring(0, 200)}...` : post.content}
-                        </Typography>
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ minHeight:100,maxHeight: 100, overflowY: "auto", scrollBehavior: "smooth",scrollbarWidth: "thin", '&::-webkit-scrollbar': { width: '4px' }, '&::-webkit-scrollbar-thumb': { backgroundColor: '#bbb', borderRadius: '4px' }, '&::-webkit-scrollbar-track': { backgroundColor: '#f0f0f0' } }}
+                          >
+                            {post.content}
+                          </Typography>
                       </>
                     )}
                   </CardContent>
