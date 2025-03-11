@@ -143,7 +143,7 @@ return (
   <Box
     sx={{
       width: "100%",
-      height: "100%",
+      minHeight: "100vh",
       mt: 4,
       backgroundColor: "#F7F5F2",
       p: { xs: 2, md: 4 },
