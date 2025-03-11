@@ -19,26 +19,22 @@ export const HeroSection2 = () => {
                 </Stack>
             </Box>
 
-            <Box sx={{ width: "100%", minHeight: "400px", display: "flex", bgcolor: "#FEFCF8", alignItems: "center", justifyContent: "center", padding: 4 }}>
-                <Box sx={{ display: "flex", width: "100%", maxWidth: "1400px", gap: 6 }}>
+            <Box sx={{ width: "100%", minHeight: "400px", display: "flex", bgcolor: "#FEFCF8", alignItems: "center", justifyContent: "center", padding: { xs: 2, md: 4 } }}>
+                <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, width: "100%", maxWidth: "1400px", gap: { xs: 3, md: 6 } }}>
                     <Box sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                        <Typography sx={{ color: "#352d2a", fontSize: "3rem", fontWeight: 700,fontFamily: "monospace" }}>
+                        <Typography sx={{ color: "#352d2a", fontSize: { xs: "2.5rem", md: "3rem" }, fontWeight: 700, fontFamily: "monospace" }}>
                             Welcome to The BookClub
                         </Typography>
-                        <Typography sx={{ color: "#555", fontSize: "1.3rem", marginTop: 2 }}>
+                        <Typography sx={{ color: "#555", fontSize: { xs: "1.2rem", md: "1.3rem" }, marginTop: 2 }}>
                             Join our community of book lovers! Discover new books, share reviews, and meet fellow readers.
                         </Typography>
                     </Box>
-
-                    <Box sx={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
-                        <img
-                            src="https://i.pinimg.com/736x/77/6a/d2/776ad23df6392ef660214300a837de55.jpg"
-                            alt="Bookshelf"
-                            style={{ width: "100%", maxWidth: "500px", borderRadius: "8px" }}
-                        />
+                    <Box sx={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", width: "100%" }}>
+                        <img src="https://i.pinimg.com/736x/77/6a/d2/776ad23df6392ef660214300a837de55.jpg" alt="Bookshelf" style={{ width: "100%", maxWidth: "500px", borderRadius: "8px", height: "auto", objectFit: "cover" }} />
                     </Box>
                 </Box>
             </Box>
+
 
             <Box sx={{ width: "100%", textAlign: "center", padding: 4, bgcolor: "#EFECE8" }}>
                 <Typography sx={{ fontSize: "2.5rem", fontWeight: "bold", color: "#352d2a",fontFamily: "monospace" }}>

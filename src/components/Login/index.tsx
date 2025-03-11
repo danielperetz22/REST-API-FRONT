@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
-import { Alert, Box, Button, Grid, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Divider, Grid, TextField, Typography } from "@mui/material";
 import { useAuth } from "../../context/AuthContext";
 import { handleGoogleResponse } from "../../hook/googleAuth";
 import { apiClient } from "../../services/api_client";
@@ -16,7 +16,7 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      console.log("🔄 User is authenticated, navigating to /posts");
+      console.log("User is authenticated, navigating to /posts");
       navigate("/posts");
     }
   }, [isAuthenticated, navigate]);
@@ -77,35 +77,30 @@ const Login: React.FC = () => {
   };
   return (
     <Grid container style={{ minHeight: "100vh", width: "100vw" }}>
-      <Grid item xs={12} md={5} sx={{ backgroundColor: "#d2cbc5", display: "flex", flexDirection: "column", justifyContent: "center", padding: "2rem" }}>
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start", textAlign: "left", width: "100%", maxWidth: "400px", marginLeft: "100px" }}>
-          <Typography variant="h3" component="h3" fontWeight={900} color="#352d2a" >Welcome Back</Typography>
-          <Typography variant="subtitle1" component="p" fontFamily= "Dancing Script" sx={{ marginTop: "1rem", color: "#352d2a", fontSize: "1.5rem" }}>Let's get you signed in</Typography>
+      <Grid item xs={12} md={5} sx={{ backgroundColor: "#d2cbc5", display: "flex", flexDirection: "column", justifyContent: "center", padding: { xs: "1.5rem", md: "2rem" } }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: { xs: "center", md: "flex-start" }, textAlign: { xs: "center", md: "left" }, width: "100%", maxWidth: "400px", paddingTop: { xs: "50px", md: 0 }, marginLeft: { xs: 0, md: "100px" } }}>
+          <Typography variant="h3" component="h3" fontWeight={900} color="#352d2a">Welcome Back</Typography>
+          <Typography variant="subtitle1" component="p" fontFamily="Dancing Script" sx={{ marginTop: "1rem", color: "#352d2a", fontSize: { xs: "1.2rem", md: "1.5rem" } }}>Let's get you signed in</Typography>
         </Box>
       </Grid>
-
+  
       <Grid item xs={12} md={7} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "2rem" }}>
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "400px", marginTop: "80px" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: "400px", marginTop: { xs: "40px", md: "80px" } }}>
           {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-
           <form onSubmit={handleSubmit}>
             <Box sx={{ display: "flex", justifyContent: "center", flexDirection: "column", gap: 1 }}>
               <TextField id="email" label="Email" size="small" value={email} placeholder="Enter your email" onChange={(e) => setEmail(e.target.value)} />
               <TextField id="password" label="Password" size="small" type="password" value={password} placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
               <Button type="submit" variant="contained" fullWidth>Submit</Button>
-
-              <Typography variant="overline" align="center" fontSize={14} sx={{ mt: 2 }}>Or log in with Google</Typography>
+              <Divider sx={{ mt: 4, fontSize:"20",fontFamily:"Dancing Script" }} >or</Divider>
               <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
-
-              <Typography variant="overline" align="center" fontSize={14} sx={{ mt: 2 }}>
-                Don't have an account?{" "} <Link to="/register">Register here</Link>
-              </Typography>
+              <Typography variant="overline" align="center" fontSize={14} sx={{ mt: 2 }}>Don't have an account?{" "} <Link to="/register">Register here</Link></Typography>
             </Box>
           </form>
         </Box>
       </Grid>
     </Grid>
-  );
+  );  
 };
 
 export default Login;

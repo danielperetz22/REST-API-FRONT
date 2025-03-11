@@ -116,7 +116,7 @@ const CreatePost = () => {
 
   return (
     <Box sx={{ backgroundColor: "#F7F5F2",height: "100%",width: "100%" }}>
-    <Container sx={{ mt: 12, mb: 4, height: "100vh", display: "flex", alignItems: "center" }}>
+    <Container sx={{ mt: 16, mb: 4, height: "100vh", display: "flex", alignItems: "center" }}>
       <Card sx={{ width: 550, mx: "auto", borderRadius: 2,p: 1 }}>
         <CardHeader
           avatar={<Avatar src={getCorrectImageUrl(userProfileImage)} />}
@@ -172,7 +172,7 @@ const CreatePost = () => {
             </Typography>
           )}
           <TextField
-            label="Post Title"
+            label="Book Name"
             fullWidth
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -181,7 +181,7 @@ const CreatePost = () => {
           />
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <TextField
-              label="Post Content"
+              label="What did you think about the book?"
               fullWidth
               multiline
               rows={5}

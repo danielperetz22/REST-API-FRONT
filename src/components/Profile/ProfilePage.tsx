@@ -25,27 +25,62 @@ const ProfilePage = () => {
     fetchUserProfile();
   }, [token]);
 
-  if (loading) return <CircularProgress />;
+  if (loading) {
+    return (
+      <Box sx={{ width: "100%", height: "100vh", bgcolor: "#FEFCF9", display: "flex",justifyContent: "center", alignItems: "center", }} >
+        <CircularProgress />
+      </Box>
+    );
+  }
   if (!user) return <Typography>No user data available.</Typography>;
 
   return (
-    <Box sx={{ width: "100%", textAlign: "center",bgcolor:"#FEFCF9" }}>
+    <Box sx={{ width: "100%", bgcolor: "#FEFCF9" }}>
       <ProfileDetails />
-      <Box sx={{ display:"flex", alignItems:"center", gap: 48 }} >
-        <Box/>
-        <Typography variant="overline" sx={{fontWeight: "bold", fontSize: 42, color: "#a6a29a", justifySelf:"flex-start" }}>
+  
+      <Box
+        sx={{
+          maxWidth: { xs: "90vw", md: "60vw" },
+          mx: "auto",
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          alignItems: { xs: "flex-start", md: "center" },
+          justifyContent: "space-between",
+          px: 2,
+          py: 2,
+          gap: { xs: 2, md: 0 }
+        }}
+      >
+        <Typography
+          variant="h2"
+          sx={{
+            alignSelf: { xs: "center", md: "flex-start" },
+            fontWeight: "bold",
+            color: "#a6a29a",
+            fontFamily: "monospace",
+            fontSize: { xs: "2.5rem", md: "4rem" },
+            textAlign: { xs: "center", md: "left" }
+          }}
+        >
           My Posts
         </Typography>
         <Button
           variant="text"
           component="a"
           href="/create_post"
-          sx={{ gap: 0.5,justifySelf:"flex-end"}}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            alignSelf: "center" ,
+            gap: 0.5
+          }}
         >
-          <AddIcon />Create Post
+          <AddIcon /> Create Post
         </Button>
       </Box>
-      <Divider/>
+  
+      <Divider />
+  
       <ProfilePost />
     </Box>
   );

@@ -28,6 +28,8 @@ import { useAuth } from "../../context/AuthContext";
 import { getCorrectImageUrl } from "../../until/imageProfile";
 import postService from "../../services/post_service"; 
 import { apiClient } from "../../services/api_client";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 
 const ExpandMore = styled(IconButton, {
@@ -59,6 +61,7 @@ interface Post {
   image: string;
   comments: Comment[];
   owner: string;
+  likes: string[];
 }
 
 const UserPosts: React.FC = () => {
@@ -77,21 +80,21 @@ const UserPosts: React.FC = () => {
   const { userId: authUserId, userEmail: authUserEmail, userUsername: authUserUsername } = useAuth();
 
   useEffect(() => {
-    console.log("🔍 Fetching user posts...");
-    console.log("👤 Current authUserId:", authUserId); // האם userId תקין?
+    console.log(" Fetching user posts...");
+    console.log(" Current authUserId:", authUserId); // האם userId תקין?
   
     const fetchUserPosts = async () => {
       try {
         const response = await apiClient.get("/post/all");
-        console.log("📩 All posts from API:", response.data);
+        console.log("All posts from API:", response.data);
   
         const allPosts: Post[] = response.data;
         const userPosts = allPosts.filter((post) => post.owner.toString() === authUserId);
         
-        console.log("✅ User posts after filtering:", userPosts);
+        console.log("User posts after filtering:", userPosts);
         setPosts(userPosts);
       } catch (err) {
-        console.error("❌ Error fetching posts:", err);
+        console.error(" Error fetching posts:", err);
         setError("Failed to fetch posts.");
       } finally {
         setIsLoading(false);
@@ -115,7 +118,7 @@ const UserPosts: React.FC = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("❌ No authentication token found!");
+        console.error(" No authentication token found!");
         return;
       }
 
@@ -127,7 +130,7 @@ const UserPosts: React.FC = () => {
       handleMenuClose();
       setSnackbarOpen(true);
     } catch (err) {
-      console.error("❌ Error deleting post:", err);
+      console.error(" Error deleting post:", err);
       setError("Failed to delete post.");
     }
   };
@@ -156,18 +159,18 @@ const UserPosts: React.FC = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("❌ No authentication token found!");
+        console.error(" No authentication token found!");
         return;
       }
 
-      console.log("📝 Sending data to API:", { title: editTitle, content: editContent });
+      console.log(" Sending data to API:", { title: editTitle, content: editContent });
 
       const response = await apiClient.put(`/post/${postId}`, 
         { title: editTitle, content: editContent },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      console.log("✅ Post updated:", response.data);
+      console.log(" Post updated:", response.data);
 
       setPosts((prevPosts) =>
         prevPosts.map((post) =>
@@ -178,7 +181,7 @@ const UserPosts: React.FC = () => {
       );
       setEditingPostId(null);
     } catch (err) {
-      console.error("❌ Error updating post:", err);
+      console.error(" Error updating post:", err);
       setError("Failed to update post.");
     }
   };
@@ -222,6 +225,38 @@ const UserPosts: React.FC = () => {
       setLoadingAI(false);
     }
   };
+    const handleLikeClick = async (postId: string) => {
+      try {
+        const token = localStorage.getItem("token");
+        const postIndex = posts.findIndex((post) => post._id === postId);
+    
+        if (postIndex === -1) return;
+    
+        const post = posts[postIndex];
+        const isLiked = post.likes.includes(authUserId || "");
+    
+        const updatedLikes = isLiked
+          ? post.likes.filter((id) => id !== authUserId)
+          : [...post.likes, authUserId || ""];
+    
+        const updatedPosts = [...posts];
+        updatedPosts[postIndex] = { ...post, likes: updatedLikes };
+        setPosts(updatedPosts);
+    
+        const endpoint = `/post/${postId}/${isLiked ? "unlike" : "like"}`;
+        const response = await apiClient.put(endpoint, {}, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+    
+        const updatedPost = response.data;
+    
+        updatedPosts[postIndex] = updatedPost;
+        setPosts(updatedPosts);
+      } catch (err) {
+        console.error("Error liking/unliking post:", err);
+        setError("Failed to like/unlike post. Please try again.");
+      }
+    };
 
   return (
     <Container sx={{ mt: 4, mb: 4 }}>
@@ -350,17 +385,32 @@ const UserPosts: React.FC = () => {
                   )}
                 </CardContent>
 
+
+
                 <CardActions disableSpacing>
-                  {editingPostId !== post._id && (
-                    <ExpandMore
-                      expand={expandedPostId === post._id}
-                      onClick={() => handleExpandClick(post._id)}
-                      aria-expanded={expandedPostId === post._id}
+                    <IconButton
+                      aria-label="add to favorites"
+                      onClick={() => handleLikeClick(post._id)}
                     >
-                      <ExpandMoreIcon />
-                    </ExpandMore>
-                  )}
-                </CardActions>
+                      {post.likes.includes(authUserId || "") ? (
+                        <FavoriteIcon color="error" />
+                      ) : (
+                        <FavoriteBorderIcon />
+                      )}
+                       <Typography variant="body2" sx={{ ml: 0.5 }}>
+                        {post.likes.length}
+                      </Typography>
+                    </IconButton>
+                    {editingPostId !== post._id && (
+                      <ExpandMore
+                        expand={expandedPostId === post._id}
+                        onClick={() => handleExpandClick(post._id)}
+                        aria-expanded={expandedPostId === post._id}
+                      >
+                        <ExpandMoreIcon />
+                      </ExpandMore>
+                    )}
+                  </CardActions>
 
                 <Collapse
                   in={expandedPostId === post._id}

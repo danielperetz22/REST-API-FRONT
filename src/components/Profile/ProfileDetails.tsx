@@ -49,26 +49,29 @@ const ProfileDetails = () => {
         mt: 4,
         mb: 4,
         backgroundColor: "#F7F5F2",
-        p: 4,
-        pt: 12,
+        p: { xs: 2, md: 4 },
+        pt: { xs: 6, md: 12 }
       }}
     >
       <Box
         sx={{
-          width: "60vw",
+          width: "90vw",
+          maxWidth: { xs: "90vw", md: "60vw" },
           display: "flex",
-          alignItems: "flex-start",
-          gap: 4,
-          mx: "auto",
+          flexDirection: { xs: "column", md: "row" }, 
+          alignItems: { xs: "center", md: "flex-start" },
+          gap: { xs: 3, md: 4 },
+          mx: "auto"
         }}
       >
         <Box sx={{ width: 250, height: 250, position: "relative" }}>
           <Avatar
             src={profileImage ? getCorrectImageUrl(profileImage) : ""}
             alt="Profile"
-            sx={{ width: 250, height: 250 }}
+            sx={{ width: "100%", height: "100%" }}
           />
         </Box>
+  
         <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
           <TextField
             label="Email"
@@ -89,9 +92,8 @@ const ProfileDetails = () => {
             component={Link}
             to="/edit_profile"
             sx={{
-              mt: "15%",
-              textTransform: "none",
-              alignSelf: "flex-end",
+              mt: { xs: 2, md: "15%" }, 
+              alignSelf: { xs: "center", md: "flex-end" }
             }}
           >
             Edit Profile
@@ -100,6 +102,6 @@ const ProfileDetails = () => {
       </Box>
     </Box>
   );
-};
+  };
 
 export default ProfileDetails;

@@ -20,6 +20,7 @@ import {
   Snackbar,
   Button,
   CardMedia,
+  Pagination,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -28,6 +29,9 @@ import CommentSection from "./CommentSection";
 import { useAuth } from "../../context/AuthContext";
 import { getCorrectImageUrl } from "../../until/imageProfile";
 import postService from "../../services/post_service";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+
 
 const ExpandMore = styled(IconButton, {
   shouldForwardProp: (prop) => prop !== "expand",
@@ -58,6 +62,7 @@ interface Post {
   image: string;
   comments: Comment[];
   owner: string;
+  likes: string[];
 }
 
 const PostsList: React.FC = () => {
@@ -76,6 +81,10 @@ const PostsList: React.FC = () => {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [totalPages, setTotalPages] = useState(1);
+  // const postsPerPage = 10;
   
   const {
     userId: authUserId,
@@ -89,7 +98,6 @@ const PostsList: React.FC = () => {
         const response = await apiClient.get("/post/all");
         console.log("Fetched posts:", response.data);
         setPosts(response.data);
-    
 
       } catch (err) {
         console.error("Error fetching posts:", err);
@@ -148,11 +156,17 @@ const PostsList: React.FC = () => {
       );
       setEditingPostId(null);
     } catch (err) {
-      console.error("❌ Error updating post:", err);
+      console.error("Error updating post:", err);
       setError("Failed to update post. Please try again.");
     }
   };
   
+  // const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
+  //   setCurrentPage(value);
+  // };
+  // const indexOfLastPost = currentPage * postsPerPage;
+  // const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  // const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
   const handleCancelEdit = () => {
     setEditingPostId(null);
@@ -171,7 +185,7 @@ const PostsList: React.FC = () => {
       handleMenuClose();
       setSnackbarOpen(true);
     } catch (err) {
-      console.error("❌ Error deleting post:", err);
+      console.error("Error deleting post:", err);
     }
   };
   
@@ -197,6 +211,40 @@ const PostsList: React.FC = () => {
     }
   };
 
+  const handleLikeClick = async (postId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      const postIndex = posts.findIndex((post) => post._id === postId);
+  
+      if (postIndex === -1) return;
+  
+      const post = posts[postIndex];
+      const isLiked = post.likes.includes(authUserId || "");
+  
+      const updatedLikes = isLiked
+        ? post.likes.filter((id) => id !== authUserId)
+        : [...post.likes, authUserId || ""];
+  
+      const updatedPosts = [...posts];
+      updatedPosts[postIndex] = { ...post, likes: updatedLikes };
+      setPosts(updatedPosts);
+  
+      const endpoint = `/post/${postId}/${isLiked ? "unlike" : "like"}`;
+      const response = await apiClient.put(endpoint, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      const updatedPost = response.data;
+  
+      updatedPosts[postIndex] = updatedPost;
+      setPosts(updatedPosts);
+    } catch (err) {
+      console.error("Error liking/unliking post:", err);
+      setError("Failed to like/unlike post. Please try again.");
+    }
+  };
+  
+
   return (
     <Box sx={{ backgroundColor: "#F7F5F2", height: "100%", width: "100%" }}>
       <Container sx={{ mt: 16, mb: 4 }}>
@@ -216,7 +264,7 @@ const PostsList: React.FC = () => {
         ) : (
           <Grid container spacing={5} justifyContent="center">
             {posts.map((post) => (
-              <Grid item xs={12} sm={8} md={6} lg={6} key={post._id}>
+              <Grid item xs={12} sm={8} md={6} lg={6} key={`${post._id}-${post.likes.length}`}>
                 <Card sx={{ maxWidth: 700, mx: "auto", borderRadius: 2 }}>
                      <CardHeader
                        avatar={<Avatar src={getCorrectImageUrl(post.userProfileImage)} />}
@@ -262,6 +310,7 @@ const PostsList: React.FC = () => {
                     alt={post.title}
                     sx={{ objectFit: "cover" }}
                   />
+                  
                   <CardContent>
                     {editingPostId === post._id ? (
                       <>
@@ -324,6 +373,19 @@ const PostsList: React.FC = () => {
                   </CardContent>
 
                   <CardActions disableSpacing>
+                    <IconButton
+                      aria-label="add to favorites"
+                      onClick={() => handleLikeClick(post._id)}
+                    >
+                      {post.likes.includes(authUserId || "") ? (
+                        <FavoriteIcon color="error" />
+                      ) : (
+                        <FavoriteBorderIcon />
+                      )}
+                       <Typography variant="body2" sx={{ ml: 0.5 }}>
+                        {post.likes.length}
+                      </Typography>
+                    </IconButton>
                     {editingPostId !== post._id && (
                       <ExpandMore
                         expand={expandedPostId === post._id}
@@ -334,6 +396,7 @@ const PostsList: React.FC = () => {
                       </ExpandMore>
                     )}
                   </CardActions>
+                  
 
                   <Collapse
                     in={expandedPostId === post._id}

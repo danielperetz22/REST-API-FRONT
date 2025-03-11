@@ -10,6 +10,7 @@ import {
   Alert,
   IconButton,
   Grid,
+  Divider,
 } from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import axios from "axios";
@@ -72,8 +73,9 @@ const Register: React.FC = () => {
     if (profileImage) {
       formData.append("profileImage", profileImage);
     } else {
-      // Append the default image path; note: your backend must support reading the default image correctly
-      formData.append("profileImage", "/src/assets/profile-default.jpg");
+      const response = await fetch(defaultImage);
+      const blob = await response.blob();
+      formData.append("profileImage", blob, "profile-default.jpg");
     }
 
     try {
@@ -92,14 +94,14 @@ const Register: React.FC = () => {
         !data.user?.username ||
         !data.user?.profileImage
       ) {
-        console.error("❌ Registration failed. Missing credentials:", data);
+        console.error("Registration failed. Missing credentials:", data);
         setError("Registration failed. Missing credentials.");
         return;
       }
 
-      console.log("✅ Registration Success:", data);
 
-      // Call login to update auth context and localStorage.
+      console.log("Registration Success:", data);
+
       login(
         data.refreshToken,
         data.user._id,
@@ -108,12 +110,18 @@ const Register: React.FC = () => {
         data.user.profileImage
       );
 
-      // We no longer call navigate here because our useEffect will handle it once isAuthenticated becomes true.
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         if (err.response) {
           console.error("Error response:", err.response.data);
-          setError(err.response.data.message || "Failed to register.");
+          // Check if the response status is 409 (Conflict) or if there's an error property
+          if (err.response.status === 409 || err.response.data.error) {
+            setError(
+              "Email is already in use. Please try another email or log in if you already have an account."
+            );
+          } else {
+            setError(err.response.data.error || err.response.data.message || "Failed to register.");
+          }
         } else if (err.request) {
           console.error("No response received:", err.request);
           setError("No response from the server. Please try again later.");
@@ -129,6 +137,7 @@ const Register: React.FC = () => {
         setError("An unknown error occurred. Please try again.");
       }
     }
+    
   };
 
   const handleGoogleSuccess = (credentialResponse: CredentialResponse) => {
@@ -148,215 +157,44 @@ const Register: React.FC = () => {
 
   return (
     <Grid container style={{ minHeight: "100%", width: "100%" }}>
-      {/* Left Section */}
-      <Grid
-        item
-        xs={12}
-        md={5}
-        sx={{
-          backgroundColor: "#d2cbc5",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          padding: "2rem",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "flex-start",
-            textAlign: "left",
-            width: "100%",
-            maxWidth: "350px",
-            marginLeft: "100px",
-          }}
-        >
-          <Typography
-            variant="h3"
-            component="h3"
-            fontWeight={900}
-            color="#352d2a"
-          >
-            Sign Up To Our App
-          </Typography>
-          <Typography
-            variant="subtitle1"
-            component="p"
-            fontFamily="Dancing Script"
-            sx={{ marginTop: "1rem", color: "#352d2a", fontSize: "1.5rem" }}
-          >
-            Here for the first time? Let's get you settled in
-          </Typography>
+      <Grid item xs={12} md={5} sx={{ backgroundColor: "#d2cbc5", display: "flex", flexDirection: "column", justifyContent: "center", padding: { xs: "1.5rem", md: "2rem" } }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: { xs: "center", md: "flex-start" }, textAlign: { xs: "center", md: "left" }, width: "100%", maxWidth: "350px", marginLeft: { xs: 0, md: "100px" },paddingTop: { xs: "50px", md: 0 } }}>
+          <Typography variant="h3" component="h3" fontWeight={900} color="#352d2a">Sign Up To Our App</Typography>
+          <Typography variant="subtitle1" component="p" fontFamily="Dancing Script" sx={{ marginTop: "1rem", color: "#352d2a", fontSize: { xs: "1.2rem", md: "1.5rem" } }}>Here for the first time? Let's get you settled in</Typography>
         </Box>
       </Grid>
-
-      {/* Right Section - Form */}
-      <Grid
-        item
-        xs={12}
-        md={7}
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "2rem",
-        }}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            width: "100%",
-            maxWidth: "400px",
-            marginTop: "80px",
-          }}
-        >
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {error}
-            </Alert>
-          )}
-
+  
+      <Grid item xs={12} md={7} sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "2rem" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", maxWidth: { xs: "90%", md: "400px" }, marginTop: { xs: "40px", md: "80px" } }}>
+          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
           <form onSubmit={handleSubmit}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-              {/* Profile Image */}
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  textAlign: "center",
-                  mb: 3,
-                }}
-              >
+              <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", mb: 3 }}>
                 <Box sx={{ position: "relative", display: "inline-block" }}>
-                  {previewImage ? (
-                    <Avatar
-                      src={previewImage || defaultImage}
-                      alt="Profile Preview"
-                      sx={{ width: 150, height: 150 }}
-                    />
-                  ) : (
-                    <Avatar
-                      alt="Default Profile"
-                      src={defaultImage}
-                      sx={{ width: 150, height: 150 }}
-                    />
-                  )}
-                  <IconButton
-                    color="default"
-                    component="label"
-                    aria-label="upload picture"
-                    sx={{
-                      position: "absolute",
-                      bottom: 0,
-                      right: 0,
-                      backgroundColor: "white",
-                      boxShadow: 3,
-                      "&:hover": { backgroundColor: "lightgray" },
-                    }}
-                  >
+                  <Avatar src={previewImage || defaultImage} alt="Profile Preview" sx={{ width: 150, height: 150 }} />
+                  <IconButton color="default" component="label" aria-label="upload picture" sx={{ position: "absolute", bottom: 0, right: 0, backgroundColor: "white", boxShadow: 3, "&:hover": { backgroundColor: "lightgray" } }}>
                     <AddPhotoAlternateOutlinedIcon />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      hidden
-                      onChange={handleFileChange}
-                    />
+                    <input type="file" accept="image/*" hidden onChange={handleFileChange} />
                   </IconButton>
                 </Box>
               </Box>
-
-              {/* Email Field */}
-              <TextField
-                id="email"
-                label="Email"
-                size="small"
-                value={email}
-                placeholder="Enter your email"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-
-              {/* Verify Email Field */}
-              <TextField
-                id="verify-email"
-                label="Verify Email"
-                size="small"
-                value={verifyEmail}
-                placeholder="Re-enter your email"
-                onChange={(e) => setVerifyEmail(e.target.value)}
-                fullWidth
-              />
-
-              {/* Username Field */}
-              <TextField
-                id="username"
-                label="Username"
-                size="small"
-                value={username}
-                placeholder="Enter your username"
-                onChange={(e) => setUsername(e.target.value)}
-              />
-
-              {/* Password Field */}
-              <TextField
-                id="password"
-                label="Password"
-                size="small"
-                type="password"
-                value={password}
-                placeholder="Enter your password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
-
-              {/* Confirm Password Field */}
-              <TextField
-                id="confirm-password"
-                label="Confirm Password"
-                size="small"
-                type="password"
-                value={confirmPassword}
-                placeholder="Re-enter your password"
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-
-              {/* Submit Button */}
-              <Button type="submit" variant="contained" fullWidth>
-                Submit
-              </Button>
-
-              {/* Google Login */}
-              <Typography
-                variant="overline"
-                align="center"
-                fontSize={14}
-                sx={{ mt: 2 }}
-              >
-                Or register with Google
-              </Typography>
-              <GoogleLogin
-                onSuccess={handleGoogleSuccess}
-                onError={handleGoogleError}
-              />
-
-              {/* Login Link */}
-              <Typography
-                variant="overline"
-                align="center"
-                fontSize={14}
-                sx={{ mt: 2 }}
-              >
-                Already have an account? <Link to="/login">Login here</Link>
-              </Typography>
+  
+              <TextField id="email" label="Email" size="small" value={email} placeholder="Enter your email" onChange={(e) => setEmail(e.target.value)} />
+              <TextField id="verify-email" label="Verify Email" size="small" value={verifyEmail} placeholder="Re-enter your email" onChange={(e) => setVerifyEmail(e.target.value)} fullWidth />
+              <TextField id="username" label="Username" size="small" value={username} placeholder="Enter your username" onChange={(e) => setUsername(e.target.value)} />
+              <TextField id="password" label="Password" size="small" type="password" value={password} placeholder="Enter your password" onChange={(e) => setPassword(e.target.value)} />
+              <TextField id="confirm-password" label="Confirm Password" size="small" type="password" value={confirmPassword} placeholder="Re-enter your password" onChange={(e) => setConfirmPassword(e.target.value)} />
+  
+              <Button type="submit" variant="contained" fullWidth>Submit</Button>
+              <Divider sx={{ mt: 4, fontSize:"20",fontFamily:"Dancing Script" }} >or</Divider>
+              <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} />
+              <Typography variant="overline" align="center" fontSize={14} sx={{ mt: 2 }}>Already have an account? <Link to="/login">Login here</Link></Typography>
             </Box>
           </form>
         </Box>
       </Grid>
     </Grid>
   );
-};
+  };
 
 export default Register;

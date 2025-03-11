@@ -10,6 +10,8 @@ import {
 } from "@mui/material";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
 import { apiClient } from "../../services/api_client";
+import { getCorrectImageUrl } from "../../until/imageProfile";
+
 
 const EditProfilePage = () => {
   const navigate = useNavigate();
@@ -40,15 +42,21 @@ const EditProfilePage = () => {
           return;
         }
         const response = await apiClient.get("/auth/profile");
+        console.log("Profile data from API:", response.data);
+
         setUser(response.data);
         setNewUsername(response.data.username);
         setNewEmail(response.data.email);
         setVerifyNewEmail(response.data.email);
 
+        console.log("profileImageFromStorage:", profileImageFromStorage);
+        console.log("previewImage before logic:", previewImage);
+
         if (visitCount === 0 && profileImageFromStorage) {
+          console.log("Using profileImageFromStorage");
           setPreviewImage(profileImageFromStorage);
         } else {
-          setPreviewImage(response.data.profileImage);
+          setPreviewImage(profileImageFromStorage||response.data.profileImage);
         }
         localStorage.setItem("visitCount", (visitCount + 1).toString());
       } catch (error) {
@@ -126,146 +134,97 @@ const EditProfilePage = () => {
       setError(errorMessage);
       console.error("Update error:", error);
     }
-  };
 
-  return (
+  };
+  const displayImageUrl = previewImage? (previewImage.startsWith("blob:") || previewImage.startsWith("data:")
+      ? previewImage: getCorrectImageUrl(previewImage)): getCorrectImageUrl(user.profileImage);
+
+return (
+  <Box
+    sx={{
+      width: "100%",
+      height: "100%",
+      mt: 4,
+      backgroundColor: "#F7F5F2",
+      p: { xs: 2, md: 4 },
+      pt: { xs: 6, md: 12 }
+    }}
+  >
     <Box
       sx={{
-        width: "100%",
-        height: "100%",
-        mt: 4,
-        backgroundColor: "#F7F5F2",
-        p: 4,
-        pt: 12,
+        maxWidth: { xs: "90vw", md: "60vw" },
+        display: "flex",
+        flexDirection: { xs: "column", md: "row" },
+        gap: { xs: 3, md: 4 },
+        mx: "auto"
       }}
     >
       <Box
         sx={{
-          width: "60vw",
-          display: "flex",
-          alignItems: "flex-start",
-          gap: 4,
-          mx: "auto",
+          order: { xs: -1, md: 0 },
+          width: 250,
+          height: 250,
+          position: "relative",
         }}
       >
-        <Box sx={{ width: 250, height: 250, position: "relative" }}>
-          <Avatar
-            src={previewImage || user.profileImage}
-            alt="Profile Preview"
-            sx={{ width: 250, height: 250 }}
+        <Avatar
+          src={displayImageUrl}
+          alt="Profile Preview"
+          sx={{ width: "100%", height: "100%" }}
+        />
+        <IconButton
+          color="default"
+          component="label"
+          sx={{
+            position: "absolute",
+            bottom: 10,
+            right: 10,
+            backgroundColor: "white",
+            boxShadow: 1,
+            borderRadius: "50%",
+            width: 40,
+            height: 40
+          }}
+        >
+          <AddPhotoAlternateOutlinedIcon />
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleFileChange}
           />
-          <IconButton
-            color="default"
-            component="label"
-            sx={{
-              position: "absolute",
-              bottom: 10,
-              right: 10,
-              backgroundColor: "white",
-              boxShadow: 1,
-              borderRadius: "50%",
-              width: 40,
-              height: 40,
-            }}
-          >
-            <AddPhotoAlternateOutlinedIcon />
-            <input
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={handleFileChange}
-            />
-          </IconButton>
-        </Box>
-        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
-          <TextField
-            label="Email"
-            size="small"
-            variant="outlined"
-            fullWidth
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-          />
-          <TextField
-            label="Verify Email"
-            size="small"
-            variant="outlined"
-            fullWidth
-            value={verifyNewEmail}
-            onChange={(e) => setVerifyNewEmail(e.target.value)}
-          />
-          <TextField
-            label="Username"
-            size="small"
-            variant="outlined"
-            fullWidth
-            value={newUsername}
-            onChange={(e) => setNewUsername(e.target.value)}
-          />
-          <TextField
-            label="Old Password"
-            type="password"
-            size="small"
-            variant="outlined"
-            fullWidth
-            value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-          />
-          <TextField
-            label="New Password"
-            type="password"
-            size="small"
-            variant="outlined"
-            fullWidth
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <TextField
-            label="Confirm New Password"
-            type="password"
-            size="small"
-            variant="outlined"
-            fullWidth
-            value={confirmNewPassword}
-            onChange={(e) => setConfirmNewPassword(e.target.value)}
-          />
+        </IconButton>
+      </Box>
 
-          {error && <Alert severity="error">{error}</Alert>}
-          {success && <Alert severity="success">{success}</Alert>}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "100%",
-              mt: "8%",
-            }}
-          >
-            <Button
-              variant="outlined"
-              component={Link}
-              to="/profile"
-              sx={{
-                alignSelf: "flex-end",
-              }}
-            >
-              Return to Profile
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleUpdateProfile}
-              sx={{
-                backgroundColor: "#a6a29a",
-                color: "white",
-                alignSelf: "flex-start",
-              }}
-            >
-              Save Changes
-            </Button>
-          </Box>
+      {/* Profile Details */}
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 2 }}>
+        <TextField label="Email" size="small" variant="outlined" fullWidth value={newEmail} onChange={(e) => setNewEmail(e.target.value)} />
+        <TextField label="Verify Email" size="small" variant="outlined" fullWidth value={verifyNewEmail} onChange={(e) => setVerifyNewEmail(e.target.value)} />
+        <TextField label="Username" size="small" variant="outlined" fullWidth value={newUsername} onChange={(e) => setNewUsername(e.target.value)} />
+        <TextField label="Old Password" type="password" size="small" variant="outlined" fullWidth value={oldPassword} onChange={(e) => setOldPassword(e.target.value)} helperText="If your account was created using Google login or you haven't set a password yet, you can leave this field empty." />
+        <TextField label="New Password" type="password" size="small" variant="outlined" fullWidth value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+        <TextField label="Confirm New Password" type="password" size="small" variant="outlined" fullWidth value={confirmNewPassword} onChange={(e) => setConfirmNewPassword(e.target.value)} />
+
+        {error && <Alert severity="error">{error}</Alert>}
+        {success && <Alert severity="success">{success}</Alert>}
+
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            gap: { xs: 1, md: 3 },
+            justifyContent: "space-between",
+            width: "100%",
+            mt: { xs: "4%", md: "8%" }
+          }}
+        >
+          <Button variant="outlined" component={Link} to="/profile" sx={{ width: { xs: "100%", md: "auto" } }}>Return to Profile</Button>
+          <Button variant="contained" onClick={handleUpdateProfile} sx={{ backgroundColor: "#a6a29a", color: "white", width: { xs: "100%", md: "auto" } }}>Save Changes</Button>
         </Box>
       </Box>
     </Box>
-  );
+  </Box>
+);    
 };
 
 export default EditProfilePage;
