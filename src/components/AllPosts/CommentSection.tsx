@@ -86,16 +86,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   };
 
   const handleGenerateAIForNewComment = async () => {
-    if (!newComment.trim()) {
-      setError("Please write something in the new comment field before generating AI text.");
-      return;
-    }
     setLoadingAIComment(true);
     setError(null);
-
+  
     try {
+   
       const aiContent = await postService.generateBookDescription(
-        newComment,     
+        post.title,     
         "A comment",    
         "helpful"       
       );
@@ -107,6 +104,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       setLoadingAIComment(false);
     }
   };
+  
 
   const handleStartEdit = (comment: Comment) => {
     setEditingCommentId(comment._id!);
@@ -135,14 +133,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         }
       );
 
-      const updatedComment: Comment = response.data.comment; // 👈 שים לב שזה תואם למבנה התגובה מהשרת
+      const updatedComment: Comment = response.data.comment; 
 
-      // עדכון רשימת התגובות עם התגובה המעודכנת
       const updatedComments = post.comments.map((c) =>
         c._id === updatedComment._id ? updatedComment : c
       );
 
-      onCommentsUpdated(updatedComments); // 👈 עדכון מיידי של הנתונים
+      onCommentsUpdated(updatedComments); 
 
       setEditingCommentId(null);
     } catch (error) {
