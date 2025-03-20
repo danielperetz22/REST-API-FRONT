@@ -18,6 +18,7 @@ export interface Post {
     profileImage: string;
     image: string;
     comments?: Comment[];
+    likes?: string[];
 }
 
 const getAllPosts = () => {

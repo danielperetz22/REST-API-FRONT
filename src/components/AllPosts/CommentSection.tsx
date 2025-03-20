@@ -15,9 +15,8 @@ import SendIcon from "@mui/icons-material/Send";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
-import axios from "axios";
 import postService from "../../services/post_service"; 
-
+import { apiClient } from "../../services/api_client";
 interface Comment {
   _id?: string;
   content: string;
@@ -69,19 +68,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         return;
       }
 
-      const response = await axios.post(
-        "http://localhost:3000/comment",
-        {
-          content: newComment,
-          postId: post._id,
-          owner: authUserId,
-          email: authUserEmail,
-          username: authUserUsername,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const response = await apiClient.post("/comment", {
+        content: newComment,
+        postId: post._id,
+        owner: authUserId,
+        email: authUserEmail,
+        username: authUserUsername,
+      });
+      
 
       const createdComment: Comment = response.data.newComment;
       setNewComment("");
@@ -92,16 +86,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   };
 
   const handleGenerateAIForNewComment = async () => {
-    if (!newComment.trim()) {
-      setError("Please write something in the new comment field before generating AI text.");
-      return;
-    }
     setLoadingAIComment(true);
     setError(null);
-
+  
     try {
+   
       const aiContent = await postService.generateBookDescription(
-        newComment,     
+        post.title,     
         "A comment",    
         "helpful"       
       );
@@ -113,6 +104,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       setLoadingAIComment(false);
     }
   };
+  
 
   const handleStartEdit = (comment: Comment) => {
     setEditingCommentId(comment._id!);
@@ -121,34 +113,43 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   };
 
   const handleSaveEdit = async (commentId: string) => {
-    if (!editedContent.trim()) return;
+    if (!editedContent.trim()) {
+      setError("Please write something in the comment before saving.");
+      return;
+    }
 
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("No authentication token found!");
+        console.error("❌ No authentication token found!");
         return;
       }
 
-      const response = await axios.put(
-        `http://localhost:3000/comment/${commentId}`,
-        { comment: editedContent },
+      const response = await apiClient.put(
+        `/comment/${commentId}`,
+        { comment: editedContent }, 
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      const updatedComment: Comment = response.data.comment;
+      const updatedComment: Comment = response.data.comment; 
+
       const updatedComments = post.comments.map((c) =>
         c._id === updatedComment._id ? updatedComment : c
       );
 
-      onCommentsUpdated(updatedComments);
+      onCommentsUpdated(updatedComments); 
+
       setEditingCommentId(null);
     } catch (error) {
-      console.error("Error updating comment:", error);
+      console.error("❌ Error updating comment:", error);
+      setError("Failed to update comment. Please try again.");
     }
-  };
+};
+
+
+  
 
   const handleCancelEdit = () => {
     setEditingCommentId(null);
@@ -163,19 +164,21 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("No authentication token found!");
+        console.error("❌ No authentication token found!");
         return;
       }
 
-      await axios.delete(`http://localhost:3000/comment/${commentId}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      await apiClient.delete(`/comment/${commentId}`, {
+        headers: { Authorization: `Bearer ${token}` }, 
       });
 
       const updatedComments = post.comments.filter((c) => c._id !== commentId);
-      onCommentsUpdated(updatedComments);
+      onCommentsUpdated(updatedComments); 
       setSnackbarOpen(true);
     } catch (error) {
-      console.error("Error deleting comment:", error);
+      console.error("❌ Error deleting comment:", error);
+
+      setError("Failed to delete comment. Please try again.");
     }
   };
 
@@ -222,7 +225,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           {error}
         </Typography>
       )}
-      {post.comments.length > 0 ? (
+       {post.comments.length > 0 ? (
         post.comments.map((comment) => (
           <Box
             key={comment._id}

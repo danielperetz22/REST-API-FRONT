@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import axios from "axios";
 import postService from "../../services/post_service"; 
 import {
   Container,
@@ -20,6 +19,7 @@ import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternate
 import { useAuth } from "../../context/AuthContext";
 import { getCorrectImageUrl } from "../../until/imageProfile";
 import { useNavigate } from "react-router-dom";
+import { apiClient } from "../../services/api_client";
 
 const CreatePost = () => {
   const [title, setTitle] = useState("");
@@ -79,14 +79,12 @@ const CreatePost = () => {
 
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
+      //const token = localStorage.getItem("token");
 
-      const response = await axios.post("http://localhost:3000/post", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
+      const response = await apiClient.post("/post", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
+      
 
       console.log("Post created successfully:", response.data);
 
@@ -99,13 +97,14 @@ const CreatePost = () => {
       setTimeout(() => {
         navigate("/profile");
       }, 3000);
-    } catch (err) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Failed to create post.");
-        console.error("Create post error:", err.response?.data || err.message);
+    } catch (err: any) {
+      if (err.response) {
+        setError(err.response.data?.message || "Failed to create post.");
+        console.error("Create post error:", err.response.data || err.message);
       } else {
         setError("Failed to create post.");
       }
+      
     } finally {
       setLoading(false);
     }
@@ -117,7 +116,7 @@ const CreatePost = () => {
 
   return (
     <Box sx={{ backgroundColor: "#F7F5F2",height: "100%",width: "100%" }}>
-    <Container sx={{ mt: 12, mb: 4, height: "100vh", display: "flex", alignItems: "center" }}>
+    <Container sx={{ mt: 12, mb: 4, height: "100%", display: "flex", alignItems: "center" }}>
       <Card sx={{ width: 550, mx: "auto", borderRadius: 2,p: 1 }}>
         <CardHeader
           avatar={<Avatar src={getCorrectImageUrl(userProfileImage)} />}
@@ -173,7 +172,7 @@ const CreatePost = () => {
             </Typography>
           )}
           <TextField
-            label="Post Title"
+            label="Book Name"
             fullWidth
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -182,7 +181,7 @@ const CreatePost = () => {
           />
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <TextField
-              label="Post Content"
+              label="What did you think about the book?"
               fullWidth
               multiline
               rows={5}
@@ -220,7 +219,7 @@ const CreatePost = () => {
               autoHideDuration={6000}
               onClose={handleSnackbarClose}
               anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-              message="Post  deleted successfully"
+              message="Post  created successfully"
             />
     </Container>
     </Box>

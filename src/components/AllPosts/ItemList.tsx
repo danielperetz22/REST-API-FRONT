@@ -26,20 +26,25 @@ const ItemsList: FC<ItemsListProps> = ({ title, items , Image}) => {
             <h1>{title}</h1>
             <img src={Image} alt="image" />
             {items.length == 0 && <p>No items</p>}
-            {items.length != 0 && <ul>
-                {items.map((item, index) => {
-                    return <li
-                        className={selectedIndex == index ? 'list-group-item active' : 'list-group-item'}
-                        key={index}
-                        onClick={() => { onClick(index) }}>
-                        {index} {item}
-                    </li>
-                })}
-            </ul>
-            }
-        </div>
-    )
+            {items.length != 0 && (
+         <ul>
+         {items.map((item, index) => {
+              return (
+                <li
+                  className={selectedIndex === index ? "list-group-item active" : "list-group-item"}
+                  key={index}
+                  onClick={() => onClick(index)}
+                >
+              {index} {item}
+                </li>
+           );
+         })}
+         </ul>
+        )       }
 
-}
+        </div>
+         )
+
+    }
 
 export default ItemsList

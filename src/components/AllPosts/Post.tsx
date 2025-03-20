@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, Typography, Button, TextField, Box, Collapse } from "@mui/material";
 import axios from "axios";
 
+
 interface Comment {
   content: string;
   owner: string;
@@ -63,8 +64,8 @@ const Post: React.FC<PostProps> = ({  title, content, imageUrl, postId }) => {
         </Button>
         <Collapse in={showComments} timeout="auto" unmountOnExit>
           <Box sx={{ mt: 2 }}>
-            {commentList.length > 0 ? (
-              commentList.map((comment, index) => (
+          {commentList.length > 0 ? (
+            commentList.map((comment, index) => (
                 <Box key={index} sx={{ mb: 2 }}>
                   <Typography variant="subtitle2" color="text.primary">
                     {comment.owner} ({comment.email})
